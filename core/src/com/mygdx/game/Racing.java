@@ -24,6 +24,7 @@ public class Racing extends ApplicationAdapter {
 	@Override
 	public void create () {
 		cars = carsInitialize();
+		money = ReadMoneyCount();
 		scene = new Store();
 	}
 
@@ -38,16 +39,23 @@ public class Racing extends ApplicationAdapter {
 		img.dispose();
 	}
 
-	public int ReadMoneyCount(){
+
+	public static void WriteMoneyInFile() {
+		FileHandle handle = Gdx.files.local("money.txt");
+		handle.writeString(String.valueOf(money), false);
+	}
+
+	public static int ReadMoneyCount(){
 		FileHandle handle = null;
 		String line = "";
 		try{
+			handle = Gdx.files.local("money.txt");
 			line = handle.readString();
+			return Integer.parseInt(line);
 		}catch (com.badlogic.gdx.utils.GdxRuntimeException ex){
 			handle.writeString(String.valueOf(money),false);
 			return 100;
 		}
-		return Integer.parseInt(line);
 	}
 
 	public ArrayList<Car>carsInitialize(){

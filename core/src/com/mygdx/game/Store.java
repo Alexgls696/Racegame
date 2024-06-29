@@ -90,6 +90,7 @@ public class Store implements Scene {
         table.setPosition(100,screen_height-100);
         stage.addActor(table);
     }
+
     private void InitSpecificationsTable() {
         int width = screen_width / 6;
         int height = screen_height / 16;
@@ -154,6 +155,9 @@ public class Store implements Scene {
             public void clicked(InputEvent event, float x, float y) {
                 scroller.setScrollX(scroller.getScrollX() - screen_height / 3-pad);
                 scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
+                Racing.money--;
+                InitMoneyTable();
+                Racing.WriteMoneyInFile();
                 if(chooseCarIndex>0){
                     chooseCarIndex--;
                 }
@@ -166,6 +170,9 @@ public class Store implements Scene {
             public void clicked(InputEvent event, float x, float y) {
                 scroller.setScrollX(scroller.getScrollX() + screen_height / 3+pad);
                 scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
+                Racing.money++;
+                InitMoneyTable();
+                Racing.WriteMoneyInFile();
                 if(chooseCarIndex<cars.size()-1){
                     chooseCarIndex++;
                 }
