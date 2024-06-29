@@ -30,7 +30,7 @@ public class AndroidLauncher extends AndroidApplication {
         startAlarmBroadcastReceiver(this);
         NotificationReceiver.scheduleNotification(this, 5, "Notification", "Something text");
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        initialize(new MyGdxGame(), config);
+        initialize(new Racing(), config);
     }
 
     public static void startAlarmBroadcastReceiver(Context context) {
