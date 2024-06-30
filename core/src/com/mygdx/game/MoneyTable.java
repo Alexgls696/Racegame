@@ -15,6 +15,8 @@ public class MoneyTable {
 
     private static BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
     private static Label.LabelStyle style = new Label.LabelStyle(font, Color.BLACK);
+    private static   Image image = new Image(new Texture(Gdx.files.internal("Store/money.png")));
+    private static Label label;
 
     public static Table changeAndGetMoneyTable(Stage stage){
         for(Actor actor: stage.getActors()){
@@ -26,10 +28,12 @@ public class MoneyTable {
         }
         Table table = new Table();
         table.setName("moneyTable");
-        Image image = new Image(new Texture(Gdx.files.internal("Store/money.png")));
+
         table.add(image).padRight(20).width(80).height(80);
-        Label label = new Label(String.valueOf(Racing.money),style);
+        label=null;
+        label = new Label(String.valueOf(Racing.money),style);
         table.add(label);
+        table.setSize(160,80);
         return table;
     }
 }

@@ -1,15 +1,12 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -22,7 +19,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.Car;
+import com.mygdx.game.Cars.UpgradesScene;
 
+import java.awt.Font;
 import java.util.ArrayList;
 
 public class Store implements Scene {
@@ -37,59 +36,75 @@ public class Store implements Scene {
     private final int my_screen_height = 2400;
     private final int my_screen_width = 1080;
 
-    BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
-    Label.LabelStyle style = new Label.LabelStyle();
+    private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
+    private Label.LabelStyle style = new Label.LabelStyle();
 
     private ImageButton left;
     private ImageButton right;
+    private ImageButton upgradeImage;
 
-    private int pad;
+    private float pad;
     private ScrollPane scroller;
     private ArrayList<Car> cars;
 
     private float specificationPositionX;
-    private float specificationPositionY = Gdx.graphics.getHeight()-200;
+    private float specificationPositionY;
+    private Scene upgradesScene;
+
+    float carWidth = screen_width / 4.5f;
+    float carHeight = screen_height / 1.5f;
+
+    float specificationTableX;
+    float specificationTableY;
 
     private void InitScrollTable() {
         Table scrollTable = new Table();
-        int carWidth = screen_height / 3;
-        int carHeight = screen_width / 3;
-        int padRight = carWidth / 2;
+        carWidth = screen_width / 4.5f;
+        float padRight = carWidth / 2;
         pad = padRight;
+
         for (int i = 0; i < cars.size(); i++) {
             Image image = new Image(cars.get(i).getStoreTexture());
             if (i == cars.size() - 1) {
                 scrollTable.add(image).width(carWidth).height(carHeight);
             } else scrollTable.add(image).width(carWidth).height(carHeight).padRight(padRight);
         }
-
+        float textHeight = carHeight / 8f;
         scrollTable.add().row();
         for (int i = 0; i < cars.size(); i++) {
             Label label = new Label(cars.get(i).getName(), style);
             if (i == cars.size() - 1) {
-                scrollTable.add(label).padTop(40);
-            } else scrollTable.add(label).padTop(40).padRight(padRight);
+                scrollTable.add(label).width(carWidth).padTop(20);
+            } else
+                scrollTable.add(label).padTop(20).width(carWidth).height(textHeight).padRight(padRight);
         }
         scroller = new ScrollPane(scrollTable);
         scroller.setScrollingDisabled(false, true);
         scroller.setFlickScroll(false);
 
+        specificationTableX = screen_width / 2f - carWidth / 2;
+        specificationTableY = screen_height - carHeight - textHeight - 100;
+
         final Table finalTable = new Table();
-        finalTable.setSize(carWidth, carHeight + 100);
-        finalTable.setPosition(screen_width / 2f - carWidth / 2f, 0);
+        finalTable.setSize(carWidth, carHeight + textHeight + 20);
+        finalTable.setPosition(specificationTableX, specificationTableY);
         finalTable.add(scroller);
         finalTable.setName("scroll_table");
 
-        specificationPositionX = screen_width / 2f + carWidth*1.7f;
+        specificationPositionX = specificationTableX + finalTable.getWidth() + screen_width / 8f;
+        specificationPositionY = specificationTableY + finalTable.getHeight();
 
         stage.addActor(finalTable);
     }
 
-    private void InitMoneyTable(){
+    private void InitMoneyTable() {
         Table table = MoneyTable.changeAndGetMoneyTable(stage);
-        table.setPosition(100,screen_height-100);
+        float width = table.getWidth();
+        table.setPosition(screen_width - table.getWidth() - 20, screen_height - 100);
         stage.addActor(table);
     }
+
+    private Table specificationsTable;
 
     private void InitSpecificationsTable() {
         int width = screen_width / 6;
@@ -104,10 +119,10 @@ public class Store implements Scene {
             }
         }
 
-        Table specificationsTable = new Table();
+        specificationsTable = new Table();
 
         int pad = 20;
-        specificationsTable.add(new Label("Скорость", style)).padRight(pad);
+        specificationsTable.add(new Label("Скорость", style)).padRight(pad).row();
         specificationsTable.add(bars[barId].image).width(width).height(height).padRight(pad);
         specificationsTable.add(new Label(String.valueOf(bars[barId].number), style)).row();
         specificationsTable.setPosition(specificationPositionX, specificationPositionY);
@@ -115,14 +130,15 @@ public class Store implements Scene {
         stage.addActor(specificationsTable);
     }
 
+
     public static int chooseCarIndex = 0;
 
-    private void changeCarInStore(){
+    private void changeCarSpecificationInStore() {
         Array<Actor> actors = stage.getActors();
-        for(Actor actor:actors){
-            if(actor.getName()!=null&&actor.getName().equals("specTable")){
-                Table table = (Table)actor;
-                int index = stage.getActors().indexOf(table,false);
+        for (Actor actor : actors) {
+            if (actor.getName() != null && actor.getName().equals("specTable")) {
+                Table table = (Table) actor;
+                int index = stage.getActors().indexOf(table, false);
                 stage.getActors().removeIndex(index);
                 InitSpecificationsTable();
                 break;
@@ -130,7 +146,35 @@ public class Store implements Scene {
         }
     }
 
-    private void initStoreButtons() {
+
+    public static boolean upgradesSceneFlag = false;
+
+    private void InitUpgradeButton() {
+        upgradeImage = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/upgrades.png"))));
+
+        int size = screen_height / 6;
+
+        BitmapFont currentFont = new BitmapFont(Gdx.files.internal("font.fnt"));
+        currentFont.getData().setScale(0.65f, 0.65f);
+        Label.LabelStyle currentStyle = new Label.LabelStyle();
+        currentStyle.font = currentFont;
+        currentStyle.fontColor = Color.BLACK;
+        Table table = new Table();
+        table.setSize(size, size + size / 2f);
+        table.setPosition(screen_width - size-50, screen_height / 3f);
+        table.add(new Label("Улучшения", currentStyle)).width(size).height(size / 2f).row();
+        table.add(upgradeImage).width(size).height(size);
+        table.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                upgradesSceneFlag=true;
+                upgradesScene = new UpgradesScene(cars.get(chooseCarIndex),stage);
+            }
+        });
+        stage.addActor(table);
+    }
+
+    private void InitStoreNavigationButtons() {
 
         left = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/left.png"))),
                 new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/hover_left.png"))));
@@ -147,36 +191,36 @@ public class Store implements Scene {
         left.getImage().setFillParent(true);
         right.getImage().setFillParent(true);
 
-        left.setPosition(50, screen_height / 3f);
-        right.setPosition(screen_width - right.getWidth() - 100, screen_height / 3f);
+        left.setPosition(25, screen_height / 3f);
+        right.setPosition(left.getX() + left.getWidth() + 50, screen_height / 3f);
 
         left.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                scroller.setScrollX(scroller.getScrollX() - screen_height / 3-pad);
+                scroller.setScrollX(scroller.getScrollX() - carWidth - pad);
                 scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
                 Racing.money--;
                 InitMoneyTable();
                 Racing.WriteMoneyInFile();
-                if(chooseCarIndex>0){
+                if (chooseCarIndex > 0) {
                     chooseCarIndex--;
                 }
-                changeCarInStore();
+                changeCarSpecificationInStore();
             }
         });
 
         right.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                scroller.setScrollX(scroller.getScrollX() + screen_height / 3+pad);
+                scroller.setScrollX(scroller.getScrollX() + carWidth + pad);
                 scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
                 Racing.money++;
                 InitMoneyTable();
                 Racing.WriteMoneyInFile();
-                if(chooseCarIndex<cars.size()-1){
+                if (chooseCarIndex < cars.size() - 1) {
                     chooseCarIndex++;
                 }
-                changeCarInStore();
+                changeCarSpecificationInStore();
             }
         });
 
@@ -217,17 +261,22 @@ public class Store implements Scene {
 
         LoadBarTextures();
         InitScrollTable();
-        initStoreButtons();
+        InitStoreNavigationButtons();
 
         InitSpecificationsTable();
         InitMoneyTable();
+        InitUpgradeButton();
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(2, 0, 8, 0);
-        stage.act();
-        stage.draw();
+        if(upgradesSceneFlag){
+            upgradesScene.render();
+        }else {
+            ScreenUtils.clear(2, 0, 8, 0);
+            stage.act();
+            stage.draw();
+        }
     }
 
     @Override
