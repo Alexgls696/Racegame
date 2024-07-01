@@ -1,3 +1,3 @@
-Полицейская_машина TWO_LIVES=true SLOW_MOTION=true TWO_LIVES=false SLOW_MOTION=true
+Полицейская_машина TWO_LIVES=true SLOW_MOTION=true TWO_LIVES=false SLOW_MOTION=false
 Гоночная_машина TWO_LIVES=true SLOW_MOTION=false
 Машина_класса_люкc TWO_LIVES=true

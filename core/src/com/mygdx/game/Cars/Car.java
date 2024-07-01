@@ -12,39 +12,30 @@ public class Car {
 
     private int speed;
     private String name;
-    private boolean doubleLive;
-    private SpriteBatch storeBatch;
     private Texture storeTexture;
     private String storePath;
+    private boolean isPurchased = false;
 
-    private ArrayList<AbstractUpgrade>upgrades = new ArrayList<>();
+    private ArrayList<AbstractUpgrade> upgrades = new ArrayList<>();
 
-    public Car(String storePath, String name, int speed){
+    public Car(String storePath, String name, int speed, boolean isPurchased) {
         storeTexture = new Texture(Gdx.files.internal(storePath));
-        storeBatch = new SpriteBatch();
-        this.name=name;
-        this.storePath=storePath;
-        this.speed=speed;
+        this.name = name;
+        this.storePath = storePath;
+        this.speed = speed;
+        this.isPurchased = isPurchased;
+    }
+
+    public void setPurchased() {
+        isPurchased = true;
+    }
+
+    public boolean isPurchased() {
+        return isPurchased;
     }
 
     public ArrayList<AbstractUpgrade> getUpgrades() {
         return upgrades;
-    }
-
-    private void initUpgradesFromFile(){
-        FileHandle handle;
-    }
-
-    public void setDoubleLive(){
-        doubleLive=true;
-    }
-
-    public void resetDoubleLive(){
-        doubleLive=false;
-    }
-
-    public boolean isDoubleLive(){
-        return doubleLive;
     }
 
     public int getSpeed() {
@@ -55,10 +46,6 @@ public class Car {
         return name;
     }
 
-    public SpriteBatch getStoreBatch() {
-        return storeBatch;
-    }
-
     public Texture getStoreTexture() {
         return storeTexture;
     }
@@ -67,7 +54,4 @@ public class Car {
         return storePath;
     }
 
-    public void setStorePath(String storePath) {
-        this.storePath = storePath;
-    }
 }

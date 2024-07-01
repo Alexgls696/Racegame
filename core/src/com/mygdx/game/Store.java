@@ -51,11 +51,13 @@ public class Store implements Scene {
     private float specificationPositionY;
     private Scene upgradesScene;
 
-    float carWidth = screen_width / 4.5f;
-    float carHeight = screen_height / 1.5f;
+    private float fontScale = screen_width/1280;
 
-    float specificationTableX;
-    float specificationTableY;
+    private float carWidth = screen_width / 4.5f;
+    private float carHeight = screen_height / 1.5f;
+
+    private float specificationTableX;
+    private float specificationTableY;
 
     private void InitScrollTable() {
         Table scrollTable = new Table();
@@ -152,17 +154,13 @@ public class Store implements Scene {
     private void InitUpgradeButton() {
         upgradeImage = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/upgrades.png"))));
 
-        int size = screen_height / 6;
-
-        BitmapFont currentFont = new BitmapFont(Gdx.files.internal("font.fnt"));
-        currentFont.getData().setScale(0.65f, 0.65f);
-        Label.LabelStyle currentStyle = new Label.LabelStyle();
-        currentStyle.font = currentFont;
-        currentStyle.fontColor = Color.BLACK;
         Table table = new Table();
+        Label label = new Label("Улучшения", style);
+        float size = label.getWidth();
+        table.add(label).width(size).height(size/2).row();
+
         table.setSize(size, size + size / 2f);
         table.setPosition(screen_width - size-50, screen_height / 3f);
-        table.add(new Label("Улучшения", currentStyle)).width(size).height(size / 2f).row();
         table.add(upgradeImage).width(size).height(size);
         table.addListener(new ClickListener(){
             @Override
@@ -255,8 +253,10 @@ public class Store implements Scene {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
+        font.getData().setScale(fontScale,fontScale);
         style.font = font;
         style.fontColor = Color.BLACK;
+
         cars = Racing.cars;
 
         LoadBarTextures();

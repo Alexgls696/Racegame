@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.mygdx.game.Cars.Car;
-import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
 
@@ -69,7 +68,7 @@ public class Racing extends ApplicationAdapter {
         String[] car_lines = line.split("\r\n");
         for (String it : car_lines) {
             String[] split = it.split(" ");
-            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n"), Integer.parseInt(split[2])));
+            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n"), Integer.parseInt(split[2]),Boolean.parseBoolean(split[3])));
         }
         return cars;
     }
