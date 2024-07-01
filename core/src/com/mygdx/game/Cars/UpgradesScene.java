@@ -72,7 +72,7 @@ public class UpgradesScene implements Scene {
         float labelHeight = 0f;
         float currentColumnSize = -1;
         for (AbstractUpgrade upgrade : upgrades) {
-            Label label = new Label(upgrade.getType().toString(), style);
+            Label label = new Label(upgrade.getType().toString().replace("_"," "), style);
             float width = label.getWidth();
             labelHeight = label.getHeight();
             current_max = Math.max(maxLabelWidth, width);
