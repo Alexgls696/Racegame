@@ -1,9 +1,7 @@
 package com.mygdx.game.Cars;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 
 import java.util.ArrayList;
@@ -11,6 +9,7 @@ import java.util.ArrayList;
 public class Car {
 
     private int speed;
+    private int cost = 170;
     private String name;
     private Texture storeTexture;
     private String storePath;
@@ -54,4 +53,7 @@ public class Car {
         return storePath;
     }
 
+    public int getCost() {
+        return cost;
+    }
 }

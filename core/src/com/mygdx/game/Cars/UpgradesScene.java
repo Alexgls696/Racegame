@@ -28,8 +28,6 @@ public class UpgradesScene implements Scene {
 
     private Texture backgroundTexture;
     private SpriteBatch backgroundSprite;
-    private Car currentCar;
-
     private final int SCREEN_WIDTH = Gdx.graphics.getWidth();
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
@@ -59,7 +57,6 @@ public class UpgradesScene implements Scene {
         purchaseStage = new Stage(new ScreenViewport());
 
         Gdx.input.setInputProcessor(stage);
-        currentCar = car;
         Table table = new Table();
 
         ArrayList<AbstractUpgrade> upgrades = car.getUpgrades();

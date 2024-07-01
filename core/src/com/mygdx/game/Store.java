@@ -41,7 +41,6 @@ public class Store implements Scene {
     private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
     private Label.LabelStyle style = new Label.LabelStyle();
 
-
     private Button left;
     private Button right;
     private Button upgradeImage;
@@ -61,6 +60,8 @@ public class Store implements Scene {
 
     private float specificationTableX;
     private float specificationTableY;
+
+    public static int chooseCarIndex = 0; //Индекс выбранной машины в списке машин
 
     private void InitScrollTable() {
         Table scrollTable = new Table();
@@ -102,33 +103,6 @@ public class Store implements Scene {
         stage.addActor(finalTable);
     }
 
-    private static BitmapFont purchaseFont = new BitmapFont(Gdx.files.internal("font.fnt"));
-    private static Label.LabelStyle purchaseLabelStyle = new Label.LabelStyle();
-    private static Label purchaseLabel;
-
-    public static int chooseCarIndex = 0; //Индекс выбранной машины в списке машин
-
-    private void purchaseStatusLabelDraw(boolean purchaseFlag) {
-        new Thread(()->{
-            purchaseLabelStyle.font=purchaseFont;
-            if(purchaseFlag){
-                purchaseLabelStyle.fontColor = Color.GREEN;
-                purchaseLabel = new Label("Покупка успешно завершена",purchaseLabelStyle);
-            }else{
-                purchaseLabelStyle.fontColor = Color.RED;
-                purchaseLabel = new Label("Недостаточно средств",purchaseLabelStyle);
-            }
-            stage.addActor(purchaseLabel);
-            try {
-                Thread.sleep(5000);
-            }catch (InterruptedException ex){
-                System.out.println(ex.getMessage()); return;
-            }
-            int index = stage.getActors().indexOf(purchaseLabel,false);
-            stage.getActors().removeIndex(index);
-        }).start();
-    }
-
     private void InitMoneyTable() {
         Table table = MoneyTable.changeAndGetMoneyTable(stage);
         table.setPosition(screen_width - table.getWidth() - 20, screen_height - 100);
@@ -136,6 +110,7 @@ public class Store implements Scene {
     }
 
     private Table specificationsTable;
+
     private void InitSpecificationsTable() {
         int width = screen_width / 6;
         int height = screen_height / 16;
@@ -186,11 +161,38 @@ public class Store implements Scene {
         upgradeImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                upgradesSceneFlag = true;
-                upgradesScene = new UpgradesScene(cars.get(chooseCarIndex), stage);
+                if(cars.get(chooseCarIndex).isPurchased()) {
+                    upgradesSceneFlag = true;
+                    upgradesScene = new UpgradesScene(cars.get(chooseCarIndex), stage);
+                }
             }
         });
         stage.addActor(upgradeImage);
+    }
+
+    private static BitmapFont purchaseFont = new BitmapFont(Gdx.files.internal("font.fnt"));
+    private static Label.LabelStyle purchaseLabelStyle = new Label.LabelStyle();
+    private static Label purchaseLabel;
+
+    private void purchaseStatusLabelDraw() {
+        if (purchaseLabel != null) {
+            int index = stage.getActors().indexOf(purchaseLabel, false);
+            if (index > 0) {
+                stage.getActors().removeIndex(index);
+            }
+        }
+        int car_cost = cars.get(chooseCarIndex).getCost();
+
+        purchaseLabelStyle.font = purchaseFont;
+        if (Racing.money >= car_cost) {
+            purchaseLabelStyle.fontColor = Color.GREEN;
+            purchaseLabel = new Label("Покупка успешно совершена", purchaseLabelStyle);
+        } else {
+            purchaseLabelStyle.fontColor = Color.WHITE;
+            purchaseLabel = new Label("Недостаточно средств", purchaseLabelStyle);
+        }
+        purchaseLabel.setPosition(screen_width / 2f - purchaseLabel.getWidth(), 25);
+        stage.addActor(purchaseLabel);
     }
 
     private static Texture playTexture = new Texture(Gdx.files.internal("Store/play.png"));
@@ -213,10 +215,15 @@ public class Store implements Scene {
         playOrLockedButton.setSize(buttonWidth, buttonHeight);
         playOrLockedButton.setPosition(screen_width - buttonWidth - 50, 50);
 
-        playOrLockedButton.addListener(new ClickListener(){
+        playOrLockedButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                super.clicked(event, x, y);
+                if (playOrLockedButton.getName().equals("locked")) {
+                    purchaseStatusLabelDraw();
+                }
+                if (playOrLockedButton.getName().equals("play")) {
+
+                }
             }
         });
 
@@ -283,8 +290,6 @@ public class Store implements Scene {
         stage.addActor(left);
         stage.addActor(right);
     }
-    //коэф нужная координата* (Координата устройства/Координата своего устройста)
-
 
     private class Bar {
         private Image image;
