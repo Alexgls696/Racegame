@@ -27,7 +27,7 @@ public class Racing extends ApplicationAdapter {
         cars = carsInitialize();
         carUpgradesInitializeFromFile();
         money = ReadMoneyCount();
-        scene = new Store();
+        scene = new Game();
     }
 
     @Override
