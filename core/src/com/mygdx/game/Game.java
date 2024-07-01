@@ -27,7 +27,7 @@ public class Game implements Scene{
     int positionCar=700;
     boolean flag_right=false, flag_left=false;
     boolean flag_gas=false, flag_breake=false;
-    int score=0, scoreDop=0;
+    int score=0;
     public Game()
     {
         stage = new Stage(new ScreenViewport());
@@ -44,7 +44,7 @@ public class Game implements Scene{
         resultLabel.setPosition((int)(850*Gdx.graphics.getWidth() / 1080),(int)(2100*Gdx.graphics.getHeight() / 2400));
         stage.addActor(resultLabel);
 
-        score=0; scoreDop=0;
+        score=0;
         positionFon1=0; positionFon2=2400;
         positionCar=700;
         flag_right=false; flag_left=false;
@@ -129,29 +129,26 @@ public class Game implements Scene{
         stage.addActor(breakeButton);
     }
 
-    private void fonDraw()
-    {
+    private void fonDraw() {
         fon.begin();
-        fon.draw(field, 0,(int)(positionFon1*Gdx.graphics.getHeight() / 2400),
+        fon.draw(field, 0, (int) (positionFon1 * Gdx.graphics.getHeight() / 2400),
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         fon.end();
 
         fon2.begin();
-        fon2.draw(field, 0,(int)(positionFon2*Gdx.graphics.getHeight() / 2400),
+        fon2.draw(field, 0, (int) (positionFon2 * Gdx.graphics.getHeight() / 2400),
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         fon2.end();
 
-        positionFon1-=15;
-        positionFon2-=15;
-        if(positionFon1<-2405)
-            positionFon1=2400;
-        if(positionFon2<-2405)
-            positionFon2=2400;
+        positionFon1 -= 15;
+        positionFon2 -= 15;
+        if (positionFon1 < -2405)
+            positionFon1 = 2400;
+        if (positionFon2 < -2405)
+            positionFon2 = 2400;
 
-        scoreDop+=1;
-        if(scoreDop==100)
+        if(positionFon1==2400 || positionFon2==2400)
         {
-            scoreDop=0;
             score+=1;
             resultLabel.setText(""+score);
         }
