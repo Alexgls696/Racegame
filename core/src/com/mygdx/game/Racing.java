@@ -11,7 +11,6 @@ import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
 
 import java.util.ArrayList;
 
-
 public class Racing extends ApplicationAdapter {
 
     public static int money = 500;

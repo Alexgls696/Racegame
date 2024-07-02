@@ -48,8 +48,6 @@ public class Store implements Scene {
     private float pad;
     private ScrollPane scroller;
     private ArrayList<Car> cars;
-
-
     private Scene upgradesScene;
 
     private float fontScale = screen_width / 1280;
@@ -187,201 +185,208 @@ public class Store implements Scene {
             }
         }
 
-        if(isDrawing) {
+        if (isDrawing) {
             Label.LabelStyle carCostLabelStyle = new Label.LabelStyle(carCostFont, Color.YELLOW);
             carCostLabelStyle.font.getData().setScale(fontScale, fontScale);
             Label label = new Label("Цена: " + cars.get(chooseCarIndex).getCost(), carCostLabelStyle);
-            label.setPosition(scrollTableX+carWidth/4, scrollTableY - label.getHeight());
+            label.setPosition(scrollTableX + carWidth / 4, scrollTableY - label.getHeight());
             label.setName("costLabel");
             stage.addActor(label);
         }
     }
 
-private void purchaseStatusLabelDraw(boolean isPurchased) {
-    if (purchaseLabel != null) {
-        int index = stage.getActors().indexOf(purchaseLabel, false);
-        if (index > 0) {
-            stage.getActors().removeIndex(index);
+    private void purchaseStatusLabelDraw(boolean isPurchased, boolean clean) {
+        if (clean) {
+            int index = stage.getActors().indexOf(purchaseLabel, false);
+            if (index > 0) {
+                stage.getActors().removeIndex(index);
+            }
+            return;
         }
+        if (purchaseLabel != null) {
+            int index = stage.getActors().indexOf(purchaseLabel, false);
+            if (index > 0) {
+                stage.getActors().removeIndex(index);
+            }
+        }
+        purchaseLabelStyle.font = purchaseFont;
+        if (isPurchased) {
+            purchaseLabelStyle.fontColor = Color.GREEN;
+            purchaseLabel = new Label("Покупка успешно совершена", purchaseLabelStyle);
+        } else {
+            purchaseLabelStyle.fontColor = Color.WHITE;
+            purchaseLabel = new Label("Недостаточно средств", purchaseLabelStyle);
+        }
+        purchaseLabel.setPosition(screen_width / 2f - purchaseLabel.getWidth(), 25);
+        stage.addActor(purchaseLabel);
     }
-    int car_cost = cars.get(chooseCarIndex).getCost();
 
-    purchaseLabelStyle.font = purchaseFont;
-    if (isPurchased) {
-        purchaseLabelStyle.fontColor = Color.GREEN;
-        purchaseLabel = new Label("Покупка успешно совершена", purchaseLabelStyle);
-    } else {
-        purchaseLabelStyle.fontColor = Color.WHITE;
-        purchaseLabel = new Label("Недостаточно средств", purchaseLabelStyle);
-    }
-    purchaseLabel.setPosition(screen_width / 2f - purchaseLabel.getWidth(), 25);
-    stage.addActor(purchaseLabel);
-}
+    private static Texture playTexture = new Texture(Gdx.files.internal("Store/play.png"));
+    private static Texture playHoverTexture = new Texture(Gdx.files.internal("Store/play_hover.png"));
+    private static Texture lockedTexture = new Texture(Gdx.files.internal("Store/locked.png"));
 
-private static Texture playTexture = new Texture(Gdx.files.internal("Store/play.png"));
-private static Texture playHoverTexture = new Texture(Gdx.files.internal("Store/play_hover.png"));
-private static Texture lockedTexture = new Texture(Gdx.files.internal("Store/locked.png"));
+    private Button playOrLockedButton = null;
 
-private Button playOrLockedButton = null;
+    private void InitPlayOrBuyButton(boolean isPurchased) {
+        playOrLockedButton = null;
+        if (isPurchased) {
+            playOrLockedButton = new Button(new TextureRegionDrawable(playTexture), new TextureRegionDrawable(playHoverTexture));
+            playOrLockedButton.setName("play");
+        } else {
+            playOrLockedButton = new Button(new TextureRegionDrawable(lockedTexture));
+            playOrLockedButton.setName("locked");
+        }
+        float buttonWidth = 350 * screen_width / 1280f;
+        float buttonHeight = 175 * screen_width / 1280f;
+        playOrLockedButton.setSize(buttonWidth, buttonHeight);
+        playOrLockedButton.setPosition(screen_width - buttonWidth - 50, 50);
 
-private void InitPlayOrBuyButton(boolean isPurchased) {
-    playOrLockedButton = null;
-    if (isPurchased) {
-        playOrLockedButton = new Button(new TextureRegionDrawable(playTexture), new TextureRegionDrawable(playHoverTexture));
-        playOrLockedButton.setName("play");
-    } else {
-        playOrLockedButton = new Button(new TextureRegionDrawable(lockedTexture));
-        playOrLockedButton.setName("locked");
-    }
-    float buttonWidth = 350 * screen_width / 1280f;
-    float buttonHeight = 175 * screen_width / 1280f;
-    playOrLockedButton.setSize(buttonWidth, buttonHeight);
-    playOrLockedButton.setPosition(screen_width - buttonWidth - 50, 50);
+        playOrLockedButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (playOrLockedButton.getName().equals("locked")) {
+                    if (Racing.money >= cars.get(chooseCarIndex).getCost()) {
+                        cars.get(chooseCarIndex).setPurchased();
+                        Racing.money -= cars.get(chooseCarIndex).getCost();
+                        purchaseStatusLabelDraw(true,false);
+                        InitPlayOrBuyButton(true);
+                        InitMoneyTable();
+                        Racing.WriteMoneyInFile();
+                        Racing.WriteCarsInformationInFile();
+                        drawCarCostLabel(false);
+                    } else {
+                        purchaseStatusLabelDraw(false,false);
+                    }
+                }
+                if (playOrLockedButton.getName().equals("play")) {
 
-    playOrLockedButton.addListener(new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            if (playOrLockedButton.getName().equals("locked")) {
-                if (Racing.money >= cars.get(chooseCarIndex).getCost()) {
-                    cars.get(chooseCarIndex).setPurchased();
-                    Racing.money -= cars.get(chooseCarIndex).getCost();
-                    purchaseStatusLabelDraw(true);
-                    InitPlayOrBuyButton(true);
-                    InitMoneyTable();
-                    Racing.WriteMoneyInFile();
-                    Racing.WriteCarsInformationInFile();
-                    drawCarCostLabel(false);
-                } else {
-                    purchaseStatusLabelDraw(false);
                 }
             }
-            if (playOrLockedButton.getName().equals("play")) {
+        });
+        stage.addActor(playOrLockedButton);
+    }
 
-            }
-        }
-    });
-    stage.addActor(playOrLockedButton);
-}
+    private void InitStoreNavigationButtons() {
+        left = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/left.png"))),
+                new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/hover_left.png"))));
 
-private void InitStoreNavigationButtons() {
-    left = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/left.png"))),
-            new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/hover_left.png"))));
+        right = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/right.png"))),
+                new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/hover_right.png"))));
 
-    right = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/right.png"))),
-            new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/hover_right.png"))));
-
-    left.addListener(new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            scroller.setScrollX(scroller.getScrollX() - carWidth - pad);
-            scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
-            if (chooseCarIndex > 0) {
-                chooseCarIndex--;
-                if (cars.get(chooseCarIndex).isPurchased()) {
-                    int index = stage.getActors().indexOf(playOrLockedButton, false);
-                    stage.getActors().removeIndex(index);
-                    InitPlayOrBuyButton(true);
-                    drawCarCostLabel(false);
-                } else {
-                    int index = stage.getActors().indexOf(playOrLockedButton, false);
-                    stage.getActors().removeIndex(index);
-                    InitPlayOrBuyButton(false);
-                    drawCarCostLabel(true);
+        left.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                scroller.setScrollX(scroller.getScrollX() - carWidth - pad);
+                scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
+                if (chooseCarIndex > 0) {
+                    purchaseStatusLabelDraw(false,true);
+                    chooseCarIndex--;
+                    if (cars.get(chooseCarIndex).isPurchased()) {
+                        int index = stage.getActors().indexOf(playOrLockedButton, false);
+                        stage.getActors().removeIndex(index);
+                        InitPlayOrBuyButton(true);
+                        drawCarCostLabel(false);
+                    } else {
+                        int index = stage.getActors().indexOf(playOrLockedButton, false);
+                        stage.getActors().removeIndex(index);
+                        InitPlayOrBuyButton(false);
+                        drawCarCostLabel(true);
+                    }
                 }
+                changeCarSpecificationInStore();
             }
-            changeCarSpecificationInStore();
-        }
-    });
+        });
 
-    right.addListener(new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            scroller.setScrollX(scroller.getScrollX() + carWidth + pad);
-            scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
-            if (chooseCarIndex < cars.size() - 1) {
-                chooseCarIndex++;
-                if (cars.get(chooseCarIndex).isPurchased()) {
-                    int index = stage.getActors().indexOf(playOrLockedButton, false);
-                    stage.getActors().removeIndex(index);
-                    InitPlayOrBuyButton(true);
-                    drawCarCostLabel(false);
-                } else {
-                    int index = stage.getActors().indexOf(playOrLockedButton, false);
-                    stage.getActors().removeIndex(index);
-                    InitPlayOrBuyButton(false);
-                    drawCarCostLabel(true);
+        right.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                scroller.setScrollX(scroller.getScrollX() + carWidth + pad);
+                scroller.addAction(Actions.sequence(Actions.delay(0.1f)));
+                if (chooseCarIndex < cars.size() - 1) {
+                    purchaseStatusLabelDraw(false,true);
+                    chooseCarIndex++;
+                    if (cars.get(chooseCarIndex).isPurchased()) {
+                        int index = stage.getActors().indexOf(playOrLockedButton, false);
+                        stage.getActors().removeIndex(index);
+                        InitPlayOrBuyButton(true);
+                        drawCarCostLabel(false);
+                    } else {
+                        int index = stage.getActors().indexOf(playOrLockedButton, false);
+                        stage.getActors().removeIndex(index);
+                        InitPlayOrBuyButton(false);
+                        drawCarCostLabel(true);
+                    }
                 }
+                changeCarSpecificationInStore();
             }
-            changeCarSpecificationInStore();
+        });
+
+        int buttonHeight = screen_height / 6;
+        int buttonWidth = screen_height / 6;
+        left.setSize(buttonWidth, buttonHeight);
+        right.setSize(buttonWidth, buttonHeight);
+
+        left.setPosition(25, screen_height / 2f - buttonHeight / 2f);
+        right.setPosition(left.getX() + left.getWidth() + 50, screen_height / 2f - buttonHeight / 2f);
+
+        stage.addActor(left);
+        stage.addActor(right);
+    }
+
+    private class Bar {
+        private Image image;
+        private int number;
+
+        public Bar(String texturePath, int number) {
+            image = new Image(new Texture(Gdx.files.internal(texturePath)));
+            this.number = number;
         }
-    });
-
-    int buttonHeight = screen_height / 6;
-    int buttonWidth = screen_height / 6;
-    left.setSize(buttonWidth, buttonHeight);
-    right.setSize(buttonWidth, buttonHeight);
-
-    left.setPosition(25, screen_height / 2f - buttonHeight / 2f);
-    right.setPosition(left.getX() + left.getWidth() + 50, screen_height / 2f - buttonHeight / 2f);
-
-    stage.addActor(left);
-    stage.addActor(right);
-}
-
-private class Bar {
-    private Image image;
-    private int number;
-
-    public Bar(String texturePath, int number) {
-        image = new Image(new Texture(Gdx.files.internal(texturePath)));
-        this.number = number;
     }
-}
 
-private void LoadBarTextures() {
-    for (int i = 0; i < barCount; i++) {
-        bars[i] = new Bar("Progress bar/bar_" + (i + 1) + ".png", 25 * (i + 1));
+    private void LoadBarTextures() {
+        for (int i = 0; i < barCount; i++) {
+            bars[i] = new Bar("Progress bar/bar_" + (i + 1) + ".png", 25 * (i + 1));
+        }
     }
-}
 
-public Store() {
-    create();
-}
-
-@Override
-public void create() {
-    stage = new Stage(new ScreenViewport());
-    Gdx.input.setInputProcessor(stage);
-
-    font.getData().setScale(fontScale, fontScale);
-    style.font = font;
-    style.fontColor = Color.BLACK;
-
-    cars = Racing.cars;
-
-    LoadBarTextures();
-    InitScrollTable();
-    InitStoreNavigationButtons();
-
-    InitSpecificationsTable();
-    InitMoneyTable();
-    InitUpgradeButton();
-    InitPlayOrBuyButton(true);
-}
-
-@Override
-public void render() {
-    if (upgradesSceneFlag) {
-        upgradesScene.render();
-    } else {
-        ScreenUtils.clear(2, 0, 8, 0);
-        stage.act();
-        stage.draw();
+    public Store() {
+        create();
     }
-}
 
-@Override
-public void dispose() {
+    @Override
+    public void create() {
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
 
-}
+        font.getData().setScale(fontScale, fontScale);
+        style.font = font;
+        style.fontColor = Color.BLACK;
+
+        cars = Racing.cars;
+
+        LoadBarTextures();
+        InitScrollTable();
+        InitStoreNavigationButtons();
+
+        InitSpecificationsTable();
+        InitMoneyTable();
+        InitUpgradeButton();
+        InitPlayOrBuyButton(true);
+    }
+
+    @Override
+    public void render() {
+        if (upgradesSceneFlag) {
+            upgradesScene.render();
+        } else {
+            ScreenUtils.clear(2, 0, 8, 0);
+            stage.act();
+            stage.draw();
+        }
+    }
+
+    @Override
+    public void dispose() {
+
+    }
 }
