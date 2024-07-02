@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Car {
 
     private int speed;
-    private int cost = 170;
+    private int cost = 100;
     private String name;
     private Texture storeTexture;
     private String storePath;
@@ -17,17 +17,19 @@ public class Car {
 
     private ArrayList<AbstractUpgrade> upgrades = new ArrayList<>();
 
-    public Car(String storePath, String name, int speed, boolean isPurchased) {
+    public Car(String storePath, String name,int cost, int speed, boolean isPurchased) {
         storeTexture = new Texture(Gdx.files.internal(storePath));
         this.name = name;
         this.storePath = storePath;
         this.speed = speed;
         this.isPurchased = isPurchased;
+        this.cost=cost;
     }
 
     public void setPurchased() {
         isPurchased = true;
     }
+
 
     public boolean isPurchased() {
         return isPurchased;

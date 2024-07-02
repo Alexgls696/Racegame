@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 import com.mygdx.game.Cars.Car;
 import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 
 public class Racing extends ApplicationAdapter {
 
-    public static int money = 100;
+    public static int money = 500;
     SpriteBatch batch;
     Texture img;
 
@@ -41,6 +40,18 @@ public class Racing extends ApplicationAdapter {
         img.dispose();
     }
 
+    public static void WriteCarsInformationInFile() {
+        new Thread(() -> {
+            FileHandle handle = Gdx.files.local("Cars/car_list.txt");
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            for (Car car : cars) {
+                line = car.getStorePath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + "\r\n";
+                buffer.append(line);
+            }
+            handle.writeString(buffer.toString(), false);
+        }).start();
+    }
 
     public static void WriteMoneyInFile() {
         FileHandle handle = Gdx.files.local("money.txt");
@@ -56,19 +67,25 @@ public class Racing extends ApplicationAdapter {
             return Integer.parseInt(line);
         } catch (com.badlogic.gdx.utils.GdxRuntimeException ex) {
             handle.writeString(String.valueOf(money), false);
-            return 100;
+            return money;
         }
     }
 
     public ArrayList<Car> carsInitialize() {
         ArrayList<Car> cars = new ArrayList<>();
-
-        FileHandle handle = Gdx.files.internal("Cars/car_list.txt");
-        String line = handle.readString();
+        FileHandle handle;
+        String line = "";
+        try {
+            handle = Gdx.files.local("Cars/car_list.txt");
+            line = handle.readString();
+        } catch (com.badlogic.gdx.utils.GdxRuntimeException ex) {
+            handle = Gdx.files.internal("Cars/car_list.txt");
+            line = handle.readString();
+        }
         String[] car_lines = line.split("\r\n");
         for (String it : car_lines) {
             String[] split = it.split(" ");
-            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n"), Integer.parseInt(split[2]),Boolean.parseBoolean(split[3])));
+            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n").replaceFirst("_", " "), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Boolean.parseBoolean(split[4])));
         }
         return cars;
     }

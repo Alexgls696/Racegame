@@ -29,11 +29,12 @@ public class MoneyTable {
         Table table = new Table();
         table.setName("moneyTable");
 
-        table.add(image).padRight(20).width(80).height(80);
+        float width = Gdx.graphics.getWidth()/12f;
+        table.add(image).padRight(20).width(width/1.5f).height(width/1.5f);
         label=null;
         label = new Label(String.valueOf(Racing.money),style);
         table.add(label);
-        table.setSize(160,80);
+        table.setSize(width,width/2);
         return table;
     }
 }
