@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
+import com.mygdx.game.Racing;
 import com.mygdx.game.Scene;
 import com.mygdx.game.Store;
 
@@ -45,37 +47,42 @@ public class UpgradesScene implements Scene {
     private static BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
     private static Label.LabelStyle style = new Label.LabelStyle(font, Color.BLACK);
 
-    private static BitmapFont descriptionFont = new BitmapFont(Gdx.files.internal("font.fnt"));
-    private static Label.LabelStyle descriptionLabelStyle = new Label.LabelStyle(descriptionFont, Color.BLACK);
-    private static Label desctiptionLabel = new Label("Доступные улучшения", descriptionLabelStyle);
+    private BitmapFont descriptionFont = new BitmapFont(Gdx.files.internal("font.fnt"));
+    private Label.LabelStyle descriptionLabelStyle;
+    private Label desctiptionLabel;
 
     private int noScaleWidth = 1280;
     float scaleC = (float) SCREEN_WIDTH / noScaleWidth;
-
 
     public UpgradesScene(Car car, Stage mainStage) {
         this.mainStage = mainStage;
         stage = new Stage(new ScreenViewport());
         purchaseStage = new Stage(new ScreenViewport());
-
         Gdx.input.setInputProcessor(stage);
         Table table = new Table();
 
         ArrayList<AbstractUpgrade> upgrades = car.getUpgrades();
 
+        descriptionLabelStyle = new Label.LabelStyle(descriptionFont, Color.BLACK);
         descriptionFont.getData().setScale(2 * scaleC, 2 * scaleC);
-        desctiptionLabel.setPosition(SCREEN_WIDTH / 2f - desctiptionLabel.getWidth(), SCREEN_HEIGHT - desctiptionLabel.getHeight() - 50);
+        desctiptionLabel = new Label("Доступные улучшения", descriptionLabelStyle);
+        desctiptionLabel.setPosition(SCREEN_WIDTH / 2f - desctiptionLabel.getWidth() / 2, SCREEN_HEIGHT - desctiptionLabel.getHeight() - 50);
+
+        font.getData().setScale(descriptionFont.getScaleX() / 1.8f, descriptionFont.getScaleY() / 1.8f);
 
         float maxLabelWidth = Float.MIN_NORMAL;
         float current_max = 0f;
         float labelHeight = 0f;
         float currentColumnSize = -1;
         for (AbstractUpgrade upgrade : upgrades) {
-            Label label = new Label(upgrade.getType().toString().replace("_"," "), style);
+            Label label = new Label(upgrade.getType().toString().replace("_", " "), style);
             float width = label.getWidth();
             labelHeight = label.getHeight();
             current_max = Math.max(maxLabelWidth, width);
-            currentColumnSize = current_max * scaleC;
+            if (current_max > maxLabelWidth) {
+                maxLabelWidth = current_max;
+            }
+            currentColumnSize = current_max / 1.3f;
             table.add(label).width(current_max).padRight(tableRightPad);
         }
         table.add().row();
@@ -93,9 +100,10 @@ public class UpgradesScene implements Scene {
                     public void clicked(InputEvent event, float x, float y) {
                         purchaseMenuFlag = true;
                         int index = table.getChildren().indexOf(button, false);
-                        int nameIndex = index - table.getColumns()+1;
+                        int nameIndex = index - table.getColumns() + 1;
+                        int tableIndex = index + table.getColumns() - 1;
                         Label nameLabel = (Label) table.getChild(nameIndex);
-                        ShowSelectedBonusPurchaseMenu(nameLabel.getText().toString(), upgrade.getCost());
+                        ShowSelectedBonusPurchaseMenu(nameLabel.getText().toString(), upgrade.getCost(), upgrade.getType(), car);
                         Gdx.input.setInputProcessor(purchaseStage);
                     }
                 });
@@ -115,7 +123,7 @@ public class UpgradesScene implements Scene {
         }
 
         table.setSize(currentColumnSize, currentColumnSize + labelHeight);
-        table.setPosition(50, SCREEN_HEIGHT / 2.5f - table.getHeight());
+        table.setPosition(50, SCREEN_HEIGHT / 3f - table.getHeight());
         table.setFillParent(true);
         stage.addActor(table);
         stage.addActor(desctiptionLabel);
@@ -123,43 +131,56 @@ public class UpgradesScene implements Scene {
         InitBackButton();
     }
 
-    private static BitmapFont selectedBonusFont = new BitmapFont(Gdx.files.internal("font.fnt"));
 
-    private void InitSelectedBonusMenuBackButton(){
-        ImageButton back = new ImageButton(new TextureRegionDrawable(backTexture),
+    private static Texture okTexture = new Texture(Gdx.files.internal("Store/ok.png"));
+
+    private void ShowSelectedBonusPurchaseMenu(String name, int cost, AbstractUpgrade.UpgradeType type, Car car) {
+        Label selectedDescriptionLabel = new Label("Подтвердить покупку?", descriptionLabelStyle);
+        selectedDescriptionLabel.setPosition(SCREEN_WIDTH / 2f - selectedDescriptionLabel.getWidth() / 2f, SCREEN_HEIGHT - selectedDescriptionLabel.getHeight() - 50);
+
+        Label.LabelStyle selectedBonusStyle = new Label.LabelStyle(font, Color.BLACK);
+        Table table = new Table();
+        float size = 100 * scaleC;
+        table.add(new Label(name + ": ", selectedBonusStyle)).padRight(40);
+        table.add(new ImageButton(new TextureRegionDrawable(moneyTexture))).width(size).height(size).padRight(10);
+        table.add(new Label(String.valueOf(cost), selectedBonusStyle));
+        table.setPosition(SCREEN_WIDTH / 2f, SCREEN_HEIGHT / 2f);
+
+        purchaseStage.addActor(selectedDescriptionLabel);
+        purchaseStage.addActor(table);
+
+        Button back = new Button(new TextureRegionDrawable(backTexture),
                 new TextureRegionDrawable(backHoverTexture));
         back.setSize(SCREEN_HEIGHT / 6f, SCREEN_HEIGHT / 6f);
-        back.setPosition(15 * scaleC, SCREEN_HEIGHT - back.getHeight() - 50 * scaleC);
-        back.getImage().setFillParent(true);
+        back.setPosition(table.getX() - table.getChild(0).getWidth(), table.getY() - back.getHeight() * 2);
         back.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                purchaseMenuFlag=false;
+                purchaseMenuFlag = false;
                 purchaseStage.getActors().clear();
                 Gdx.input.setInputProcessor(stage);
             }
         });
+
+        Button okButton = new Button(new TextureRegionDrawable(okTexture));
+        okButton.setSize(SCREEN_HEIGHT / 6f, SCREEN_HEIGHT / 6f);
+        okButton.setPosition(back.getX() + back.getWidth() + 300 * scaleC, back.getY());
+        okButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (Racing.money >= cost) {
+                    Racing.money -= cost;
+                    AbstractUpgrade upgrade = car.getUpgrades().stream().filter(o -> o.getType().equals(type)).findFirst().get();
+                    upgrade.setPurchasedValue(true);
+                    purchaseMenuFlag = false;
+                    purchaseStage.getActors().clear();
+                    Gdx.input.setInputProcessor(stage);
+                }
+            }
+        });
+
+        purchaseStage.addActor(okButton);
         purchaseStage.addActor(back);
-    }
-    private void ShowSelectedBonusPurchaseMenu(String name, int cost) {
-
-        Label selectedDescriptionLabel = new Label("Подтвердить покупку?",descriptionLabelStyle);
-        selectedDescriptionLabel.setPosition(SCREEN_WIDTH/2f-selectedDescriptionLabel.getWidth()/2f,SCREEN_HEIGHT - selectedDescriptionLabel.getHeight() - 50);
-
-        selectedBonusFont.getData().setScale(descriptionFont.getScaleX()/1.5f,descriptionFont.getScaleY()/1.5f);
-
-        Table table = new Table();
-
-        float size = 100*scaleC;
-        table.add(new Label(name+": ",style)).padRight(40);
-        table.add(new ImageButton(new TextureRegionDrawable(moneyTexture))).width(size).height(size).padRight(10);
-        table.add(new Label(String.valueOf(cost), style));
-
-        table.setPosition(SCREEN_WIDTH/2f,SCREEN_HEIGHT/2f);
-
-        purchaseStage.addActor(selectedDescriptionLabel);
-        purchaseStage.addActor(table);
-        InitSelectedBonusMenuBackButton();
     }
 
     boolean backFlag = false;
@@ -176,7 +197,7 @@ public class UpgradesScene implements Scene {
         back.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                    backFlag = true;
+                backFlag = true;
             }
         });
         stage.addActor(back);
