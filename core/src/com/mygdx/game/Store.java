@@ -33,7 +33,7 @@ import java.util.ArrayList;
 public class Store implements Scene {
     private final int barCount = 4;
     private Bar[] bars = new Bar[barCount];
-    private Stage stage;
+    public static Stage stage;
 
     private final int screen_height = Gdx.graphics.getHeight();
     private final int screen_width = Gdx.graphics.getWidth();
@@ -100,12 +100,6 @@ public class Store implements Scene {
         finalTable.setName("scroll_table");
 
         stage.addActor(finalTable);
-    }
-
-    private void InitMoneyTable() {
-        Table table = MoneyTable.changeAndGetMoneyTable(stage);
-        table.setPosition(screen_width - table.getWidth() - 20, screen_height - table.getHeight() - 20);
-        stage.addActor(table);
     }
 
     private Table specificationsTable;
@@ -250,7 +244,7 @@ public class Store implements Scene {
                         Racing.money -= cars.get(chooseCarIndex).getCost();
                         purchaseStatusLabelDraw(true,false);
                         InitPlayOrBuyButton(true);
-                        InitMoneyTable();
+                        MoneyTable.changeAndGetMoneyTable(stage);
                         Racing.WriteMoneyInFile();
                         Racing.WriteCarsInformationInFile();
                         drawCarCostLabel(false);
@@ -259,7 +253,7 @@ public class Store implements Scene {
                     }
                 }
                 if (playOrLockedButton.getName().equals("play")) {
-
+                    //----------------------------------------------------Отсюда запуск игры
                 }
             }
         });
@@ -369,7 +363,7 @@ public class Store implements Scene {
         InitStoreNavigationButtons();
 
         InitSpecificationsTable();
-        InitMoneyTable();
+        MoneyTable.changeAndGetMoneyTable(stage);
         InitUpgradeButton();
         InitPlayOrBuyButton(true);
     }

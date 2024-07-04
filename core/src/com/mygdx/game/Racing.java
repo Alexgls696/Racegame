@@ -6,6 +6,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.Cars.Car;
+import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
 
@@ -39,6 +40,20 @@ public class Racing extends ApplicationAdapter {
         img.dispose();
     }
 
+    public static void WriteCarsUpgradesInFile(){
+        new Thread(()->{
+            FileHandle handle = Gdx.files.local("Cars/upgrades_list.txt");
+            StringBuilder builder = new StringBuilder();
+            for(Car car: cars){
+                builder.append(car.getName().replace(" ","_")+" ");
+                for(AbstractUpgrade upgrade: car.getUpgrades()){
+                    builder.append(upgrade.getType()+"="+upgrade.isPurchased()+" ");
+                }
+                builder.append("\r\n");
+            }
+            handle.writeString(builder.toString(), false);
+        }).start();
+    }
     public static void WriteCarsInformationInFile() {
         new Thread(() -> {
             FileHandle handle = Gdx.files.local("Cars/car_list.txt");

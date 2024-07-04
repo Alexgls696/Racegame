@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.SnapshotArray;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
+import com.mygdx.game.MoneyTable;
 import com.mygdx.game.Racing;
 import com.mygdx.game.Scene;
 import com.mygdx.game.Store;
@@ -54,14 +55,13 @@ public class UpgradesScene implements Scene {
     private int noScaleWidth = 1280;
     float scaleC = (float) SCREEN_WIDTH / noScaleWidth;
 
+
+
     public UpgradesScene(Car car, Stage mainStage) {
         this.mainStage = mainStage;
         stage = new Stage(new ScreenViewport());
         purchaseStage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        Table table = new Table();
-
-        ArrayList<AbstractUpgrade> upgrades = car.getUpgrades();
 
         descriptionLabelStyle = new Label.LabelStyle(descriptionFont, Color.BLACK);
         descriptionFont.getData().setScale(2 * scaleC, 2 * scaleC);
@@ -70,6 +70,19 @@ public class UpgradesScene implements Scene {
 
         font.getData().setScale(descriptionFont.getScaleX() / 1.8f, descriptionFont.getScaleY() / 1.8f);
 
+        stage.addActor(desctiptionLabel);
+
+        Table upgradesTable = InitUpgradesTable(car);
+        stage.addActor(upgradesTable);
+
+        InitBackButton();
+        MoneyTable.changeAndGetMoneyTable(stage);
+    }
+
+    private Table InitUpgradesTable(Car car){
+        Table table = new Table();
+        table.setName("upgradesTable");
+        ArrayList<AbstractUpgrade> upgrades = car.getUpgrades();
         float maxLabelWidth = Float.MIN_NORMAL;
         float current_max = 0f;
         float labelHeight = 0f;
@@ -125,12 +138,8 @@ public class UpgradesScene implements Scene {
         table.setSize(currentColumnSize, currentColumnSize + labelHeight);
         table.setPosition(50, SCREEN_HEIGHT / 3f - table.getHeight());
         table.setFillParent(true);
-        stage.addActor(table);
-        stage.addActor(desctiptionLabel);
-
-        InitBackButton();
+        return table;
     }
-
 
     private static Texture okTexture = new Texture(Gdx.files.internal("Store/ok.png"));
 
@@ -174,6 +183,17 @@ public class UpgradesScene implements Scene {
                     upgrade.setPurchasedValue(true);
                     purchaseMenuFlag = false;
                     purchaseStage.getActors().clear();
+
+                    for(int i = 0; i < stage.getActors().size; i++){
+                        if(stage.getActors().get(i).getName()!=null&&stage.getActors().get(i).getName().equals("upgradesTable")){
+                            stage.getActors().removeIndex(i); break;
+                        }
+                    }
+                    Table newUpgradesTable = InitUpgradesTable(car);
+                    stage.addActor(newUpgradesTable);
+                    Racing.WriteCarsUpgradesInFile();
+                    MoneyTable.changeAndGetMoneyTable(stage);
+                    Racing.WriteMoneyInFile();
                     Gdx.input.setInputProcessor(stage);
                 }
             }
@@ -181,6 +201,8 @@ public class UpgradesScene implements Scene {
 
         purchaseStage.addActor(okButton);
         purchaseStage.addActor(back);
+
+        MoneyTable.changeAndGetMoneyTable(purchaseStage);
     }
 
     boolean backFlag = false;
@@ -213,6 +235,7 @@ public class UpgradesScene implements Scene {
         if (backFlag) {
             stage.dispose();
             purchaseStage.dispose();
+            MoneyTable.changeAndGetMoneyTable(Store.stage);
             backFlag = false;
             Store.upgradesSceneFlag = false;
             Gdx.input.setInputProcessor(mainStage);
