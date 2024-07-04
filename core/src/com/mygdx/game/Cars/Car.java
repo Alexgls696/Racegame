@@ -30,7 +30,6 @@ public class Car {
         isPurchased = true;
     }
 
-
     public boolean isPurchased() {
         return isPurchased;
     }

@@ -40,7 +40,7 @@ public class UpgradesScene implements Scene {
     private final float tableRightPad = upgradeSize / 5f;
 
     private Stage stage;
-    private Stage mainStage;
+    private Stage mainStage; //Stage магазина
     private Stage purchaseStage;
     private boolean purchaseMenuFlag = false;
 
@@ -54,8 +54,6 @@ public class UpgradesScene implements Scene {
 
     private int noScaleWidth = 1280;
     float scaleC = (float) SCREEN_WIDTH / noScaleWidth;
-
-
 
     public UpgradesScene(Car car, Stage mainStage) {
         this.mainStage = mainStage;
@@ -143,6 +141,20 @@ public class UpgradesScene implements Scene {
 
     private static Texture okTexture = new Texture(Gdx.files.internal("Store/ok.png"));
 
+    private BitmapFont noMoneyFont = new BitmapFont(Gdx.files.internal("font.fnt"));
+
+    private void DrawNoMoneyLabel(){
+        for(int i = 0; i < purchaseStage.getActors().size;i++){
+            if(purchaseStage.getActors().get(i).getName()!=null&&purchaseStage.getActors().get(i).getName().equals("noMoneyLabel")){
+                purchaseStage.getActors().removeIndex(i); break;
+            }
+        }
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle(font,Color.WHITE);
+        Label label = new Label("Недостаточно средств",labelStyle);
+        label.setPosition(SCREEN_WIDTH/2f-label.getWidth()/2,50);
+        purchaseStage.addActor(label);
+    }
     private void ShowSelectedBonusPurchaseMenu(String name, int cost, AbstractUpgrade.UpgradeType type, Car car) {
         Label selectedDescriptionLabel = new Label("Подтвердить покупку?", descriptionLabelStyle);
         selectedDescriptionLabel.setPosition(SCREEN_WIDTH / 2f - selectedDescriptionLabel.getWidth() / 2f, SCREEN_HEIGHT - selectedDescriptionLabel.getHeight() - 50);
@@ -195,6 +207,8 @@ public class UpgradesScene implements Scene {
                     MoneyTable.changeAndGetMoneyTable(stage);
                     Racing.WriteMoneyInFile();
                     Gdx.input.setInputProcessor(stage);
+                }else{
+                    DrawNoMoneyLabel();
                 }
             }
         });
