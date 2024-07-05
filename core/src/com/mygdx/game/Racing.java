@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.mygdx.game.Cars.Car;
+import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
 
@@ -20,7 +21,9 @@ public class Racing extends ApplicationAdapter {
     private Scene storeScene;
     private Scene currentScene;
     private Scene mainMenuScene;
+    private Scene game;
     public static ArrayList<Car> cars;
+
 
     @Override
     public void create() {
@@ -104,7 +107,7 @@ public class Racing extends ApplicationAdapter {
         String[] car_lines = line.split("\r\n");
         for (String it : car_lines) {
             String[] split = it.split(" ");
-            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n").replaceFirst("_", " "), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Boolean.parseBoolean(split[4])));
+            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n").replaceFirst("_", " "), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Boolean.parseBoolean(split[4]), Integer.parseInt(split[5]),Integer.parseInt(split[6])));
         }
         return cars;
     }
@@ -148,4 +151,8 @@ public class Racing extends ApplicationAdapter {
     public Scene getMainMenuScene() {
         return mainMenuScene;
     }
+
+    public void setGameScene(Scene game){this.game=game;}
+
+    public Scene getGameScene(){return game;}
 }

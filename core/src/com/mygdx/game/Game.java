@@ -27,15 +27,15 @@ public class Game implements Scene{
 
     private SpriteBatch fon = new SpriteBatch();
     private SpriteBatch fon2 = new SpriteBatch();
-    private Texture field = new Texture("Game/Field.jpg");
-    private Texture desert = new Texture("Game/Desert.jpg");
+    private static Texture field = new Texture("Game/Field.jpg");
+    private static Texture desert = new Texture("Game/Desert.jpg");
     private Texture drawFonTexture1=field;
     private Texture drawFonTexture2=field;
     int positionFon1=0, positionFon2=2400;
     private boolean flag_fon=false;
 
     private SpriteBatch carBatch = new SpriteBatch();
-    static Car gameCar=new Car("Cars/Ferra/Ferra.png", "Ferra", 40,false);
+    private static Car gameCar;
     boolean flag_right=false, flag_left=false;
     boolean flag_gas=false, flag_breake=false;
     static int positionCarY=100;
@@ -46,8 +46,9 @@ public class Game implements Scene{
     EnemyCar[] enemyCar=new EnemyCar[6];
     SpriteBatch[] enemyCarBatch=new SpriteBatch[6];
 
-    public Game()
+    public Game(Car gameCar)
     {
+        this.gameCar=gameCar;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         init_buttons();
@@ -342,6 +343,5 @@ public class Game implements Scene{
         fon2.dispose();
         field.dispose();
         stage.dispose();
-
     }
 }

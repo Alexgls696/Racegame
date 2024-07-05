@@ -1,3 +1,1 @@
-Cars/PoliceCar/image.png Полицейская_машина 150 50 true
-Cars/SportCar/Blue/image.png Гоночная_машина 100 75 false
-Cars/LuxCar/image.png Машина_класса_люкс 250 25 false
+Cars/Yagoda/Yagoda.png Yagoda 0 20 true 320 700

@@ -20,7 +20,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.Car;
-import com.mygdx.game.Cars.UpgradesScene;
 
 import java.awt.Font;
 import java.util.ArrayList;
@@ -74,7 +73,7 @@ public class Store implements Scene {
         pad = padRight;
 
         for (int i = 0; i < cars.size(); i++) {
-            Image image = new Image(cars.get(i).getStoreTexture());
+            Image image = new Image(cars.get(i).getCarTexture());
             if (i == cars.size() - 1) {
                 scrollTable.add(image).width(carWidth).height(carHeight);
             } else scrollTable.add(image).width(carWidth).height(carHeight).padRight(padRight);
@@ -90,7 +89,7 @@ public class Store implements Scene {
         }
         scrollTable.add().row();
         for (int i = 0; i < cars.size(); i++) {
-            Image image = new Image(cars.get(i).getStoreTexture());
+            Image image = new Image(cars.get(i).getCarTexture());
             if (i == cars.size() - 1) {
                 scrollTable.add(image).width(carWidth).height(carHeight);
             } else scrollTable.add(image).width(carWidth).height(carHeight).padRight(padRight);
@@ -120,11 +119,14 @@ public class Store implements Scene {
         int speed = cars.get(chooseCarIndex).getSpeed();
 
         int barId = -1;
-        for (int i = 0; i < bars.length; i++) {
-            if (bars[i].number == speed) {
-                barId = i;
-                break;
-            }
+        if(speed>=15 && speed<=20){
+            barId=0;
+        }else if(speed>20 && speed<=25){
+            barId=1;
+        }else if(speed>25 && speed<=30){
+            barId=2;
+        }else if(speed>30){
+            barId=3;
         }
 
         specificationsTable = new Table();
@@ -132,7 +134,7 @@ public class Store implements Scene {
         int pad = 20;
         specificationsTable.add(new Label("Скорость", style)).padRight(pad).row();
         specificationsTable.add(bars[barId].image).width(width).height(height).padRight(pad);
-        specificationsTable.add(new Label(String.valueOf(bars[barId].number), style)).row();
+        specificationsTable.add(new Label(String.valueOf(speed), style)).row();
         specificationsTable.setPosition(screen_width - screen_width / 4f, screen_height - height * 2);
         specificationsTable.setName("specTable");
         stage.addActor(specificationsTable);
@@ -263,7 +265,8 @@ public class Store implements Scene {
                     }
                 }
                 if (playOrLockedButton.getName().equals("play")) {
-                    //----------------------------------------------------Отсюда запуск игры
+                    racing.setGameScene(new Game(cars.get(chooseCarIndex)));
+                    racing.setCurrentScene(racing.getGameScene());
                 }
             }
         });
