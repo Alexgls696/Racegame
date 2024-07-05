@@ -66,26 +66,20 @@ public class Store implements Scene {
         float scaleTableWidth = screen_width / 2400f;
         float scaleTableHeight = screen_height / 1080f;
         Table scrollTable = new Table();
-        carWidth = scaleTableWidth * 400;
-        carHeight = scaleTableHeight * 600;
+        carWidth = scaleTableWidth * 450;
+        carHeight = scaleTableHeight * 700;
 
         float padRight = carWidth / 2;
         pad = padRight;
 
-        for (int i = 0; i < cars.size(); i++) {
-            Image image = new Image(cars.get(i).getCarTexture());
-            if (i == cars.size() - 1) {
-                scrollTable.add(image).width(carWidth).height(carHeight);
-            } else scrollTable.add(image).width(carWidth).height(carHeight).padRight(padRight);
-        }
         float textHeight = carHeight / 8f;
 
         for (int i = 0; i < cars.size(); i++) {
             Label label = new Label(cars.get(i).getName(), style);
             if (i == cars.size() - 1) {
-                scrollTable.add(label).width(carWidth).padTop(20);
+                scrollTable.add(label).width(carWidth).padBottom(0);
             } else
-                scrollTable.add(label).padTop(20).width(carWidth).height(textHeight).padRight(padRight);
+                scrollTable.add(label).padBottom(0).width(carWidth).height(textHeight).padRight(padRight);
         }
         scrollTable.add().row();
         for (int i = 0; i < cars.size(); i++) {
@@ -103,7 +97,7 @@ public class Store implements Scene {
         scrollTableY = screen_height / 2f - carHeight / 2f - textHeight;
 
         final Table finalTable = new Table();
-        finalTable.setSize(carWidth, carHeight + textHeight + 20);
+        finalTable.setSize(carWidth, carHeight + textHeight+padRight/2f);
         finalTable.setPosition(scrollTableX, scrollTableY);
         finalTable.add(scroller);
         finalTable.setName("scroll_table");
@@ -250,6 +244,10 @@ public class Store implements Scene {
         playOrLockedButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                if (playOrLockedButton.getName().equals("play")) {
+                    racing.setGameScene(new Game(cars.get(chooseCarIndex)));
+                    racing.setCurrentScene(racing.getGameScene());
+                }
                 if (playOrLockedButton.getName().equals("locked")) {
                     if (Racing.money >= cars.get(chooseCarIndex).getCost()) {
                         cars.get(chooseCarIndex).setPurchased();
@@ -263,10 +261,6 @@ public class Store implements Scene {
                     } else {
                         purchaseStatusLabelDraw(false,false);
                     }
-                }
-                if (playOrLockedButton.getName().equals("play")) {
-                    racing.setGameScene(new Game(cars.get(chooseCarIndex)));
-                    racing.setCurrentScene(racing.getGameScene());
                 }
             }
         });
@@ -386,7 +380,7 @@ public class Store implements Scene {
 
         font.getData().setScale(fontScale, fontScale);
         style.font = font;
-        style.fontColor = Color.BLACK;
+        style.fontColor = Color.WHITE;
 
         cars = Racing.cars;
 

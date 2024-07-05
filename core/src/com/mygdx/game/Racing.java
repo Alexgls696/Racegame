@@ -30,8 +30,6 @@ public class Racing extends ApplicationAdapter {
         cars = carsInitialize();
         carUpgradesInitializeFromFile();
         money = ReadMoneyCount();
-        carUpgradesInitializeFromFile();
-
         storeScene = new Store(this);
         mainMenuScene = new MainMenu(this);
         currentScene = mainMenuScene;
@@ -68,7 +66,7 @@ public class Racing extends ApplicationAdapter {
             String line;
             StringBuffer buffer = new StringBuffer();
             for (Car car : cars) {
-                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + "\r\n";
+                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " "+car.getBorderRight() + " "+car.getBorderLeft()+"\r\n";
                 buffer.append(line);
             }
             handle.writeString(buffer.toString(), false);
@@ -125,6 +123,7 @@ public class Racing extends ApplicationAdapter {
         String[] lines = content.split("\r\n");
         for (int i = 0; i < cars.size(); i++) {
             String[] line = lines[i].split(" ");
+
             for (int j = 1; j < line.length; j++) {
                 String[] subline = line[j].split("=");
                 String value = subline[0];
