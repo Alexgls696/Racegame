@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class Car {
 
     private int speed;
+    private int cost = 100;
     private int positionCar;
     private String name;
     private Texture carTexture;
@@ -21,14 +22,14 @@ public class Car {
 
     private ArrayList<AbstractUpgrade> upgrades = new ArrayList<>();
 
-    public Car(String carPath, String name, int speed, boolean isPurchased) {
+    public Car(String carPath, String name,int cost, int speed, boolean isPurchased) {
         carTexture = new Texture(Gdx.files.internal(carPath));
         this.name = name;
         this.carPath = carPath;
         this.speed = speed;
         this.isPurchased = isPurchased;
+        this.cost=cost;
     }
-
 
     public void setPurchased() {
         isPurchased = true;
@@ -69,4 +70,7 @@ public class Car {
     public void setPositionCar(int positionCar){this.positionCar=positionCar;}
 
     public int getPositionCar(){return positionCar;}
+    public int getCost() {
+        return cost;
+    }
 }

@@ -15,11 +15,11 @@ import java.util.ArrayList;
 
 public class Racing extends ApplicationAdapter {
 
-    public static int money = 100;
-    SpriteBatch batch;
-    Texture img;
+    public static int money = 500;
 
-    private Scene scene;
+    private Scene storeScene;
+    private Scene currentScene;
+    private Scene mainMenuScene;
     public static ArrayList<Car> cars;
 
     @Override
@@ -27,20 +27,50 @@ public class Racing extends ApplicationAdapter {
         cars = carsInitialize();
         carUpgradesInitializeFromFile();
         money = ReadMoneyCount();
-        scene = new Game();
+        carUpgradesInitializeFromFile();
+
+        storeScene = new Store(this);
+        mainMenuScene = new MainMenu(this);
+        currentScene = mainMenuScene;
     }
 
     @Override
     public void render() {
-        scene.render();
+        currentScene.render();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        img.dispose();
+        storeScene.dispose();
+        mainMenuScene.dispose();
     }
 
+    public static void WriteCarsUpgradesInFile(){
+        new Thread(()->{
+            FileHandle handle = Gdx.files.local("Cars/upgrades_list.txt");
+            StringBuilder builder = new StringBuilder();
+            for(Car car: cars){
+                builder.append(car.getName().replace(" ","_")+" ");
+                for(AbstractUpgrade upgrade: car.getUpgrades()){
+                    builder.append(upgrade.getType()+"="+upgrade.isPurchased()+" ");
+                }
+                builder.append("\r\n");
+            }
+            handle.writeString(builder.toString(), false);
+        }).start();
+    }
+    public static void WriteCarsInformationInFile() {
+        new Thread(() -> {
+            FileHandle handle = Gdx.files.local("Cars/car_list.txt");
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            for (Car car : cars) {
+                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + "\r\n";
+                buffer.append(line);
+            }
+            handle.writeString(buffer.toString(), false);
+        }).start();
+    }
 
     public static void WriteMoneyInFile() {
         FileHandle handle = Gdx.files.local("money.txt");
@@ -56,19 +86,25 @@ public class Racing extends ApplicationAdapter {
             return Integer.parseInt(line);
         } catch (com.badlogic.gdx.utils.GdxRuntimeException ex) {
             handle.writeString(String.valueOf(money), false);
-            return 100;
+            return money;
         }
     }
 
     public ArrayList<Car> carsInitialize() {
         ArrayList<Car> cars = new ArrayList<>();
-
-        FileHandle handle = Gdx.files.internal("Cars/car_list.txt");
-        String line = handle.readString();
+        FileHandle handle;
+        String line = "";
+        try {
+            handle = Gdx.files.local("Cars/car_list.txt");
+            line = handle.readString();
+        } catch (com.badlogic.gdx.utils.GdxRuntimeException ex) {
+            handle = Gdx.files.internal("Cars/car_list.txt");
+            line = handle.readString();
+        }
         String[] car_lines = line.split("\r\n");
         for (String it : car_lines) {
             String[] split = it.split(" ");
-            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n"), Integer.parseInt(split[2]),Boolean.parseBoolean(split[3])));
+            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n").replaceFirst("_", " "), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Boolean.parseBoolean(split[4])));
         }
         return cars;
     }
@@ -99,5 +135,17 @@ public class Racing extends ApplicationAdapter {
             }
         }
         System.out.println();
+    }
+
+    public void setCurrentScene(Scene currentScene) {
+        this.currentScene = currentScene;
+    }
+
+    public Scene getStoreScene() {
+        return storeScene;
+    }
+
+    public Scene getMainMenuScene() {
+        return mainMenuScene;
     }
 }
