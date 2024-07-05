@@ -4,16 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -23,14 +19,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.Car;
-import com.mygdx.game.Cars.UpgradesScene;
 
-import org.w3c.dom.Text;
-
-import java.awt.Font;
 import java.util.ArrayList;
 
 public class Store implements Scene {
+    private Racing racing;//Для возврата в главное меню
+
     private final int barCount = 4;
     private Bar[] bars = new Bar[barCount];
     public static Stage stage;
@@ -327,6 +321,24 @@ public class Store implements Scene {
         stage.addActor(right);
     }
 
+    private void InitBackButton() //Изменить иконку при желании
+    {
+        Button backButton = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/left.png"))),
+                new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/hover_left.png"))));
+        int buttonHeight = screen_height / 6;
+        int buttonWidth = screen_height / 6;
+        backButton.setSize(buttonWidth,buttonHeight);
+        backButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                racing.setCurrentScene(racing.getMainMenuScene());
+                Gdx.input.setInputProcessor(MainMenu.menuStage);
+            }
+        });
+        backButton.setPosition(50,screen_height-backButton.getHeight()-50);
+        stage.addActor(backButton);
+    }
+
     private class Bar {
         private Image image;
         private int number;
@@ -343,7 +355,8 @@ public class Store implements Scene {
         }
     }
 
-    public Store() {
+    public Store(Racing racing) {
+        this.racing=racing;
         create();
     }
 
@@ -365,6 +378,7 @@ public class Store implements Scene {
         InitSpecificationsTable();
         MoneyTable.changeAndGetMoneyTable(stage);
         InitUpgradeButton();
+        InitBackButton();
         InitPlayOrBuyButton(true);
     }
 

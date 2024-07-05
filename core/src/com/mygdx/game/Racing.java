@@ -15,29 +15,32 @@ import java.util.ArrayList;
 public class Racing extends ApplicationAdapter {
 
     public static int money = 500;
-    SpriteBatch batch;
-    Texture img;
 
-    private Scene scene;
+    private Scene storeScene;
+    private Scene currentScene;
+    private Scene mainMenuScene;
     public static ArrayList<Car> cars;
 
     @Override
     public void create() {
         cars = carsInitialize();
-        carUpgradesInitializeFromFile();
         money = ReadMoneyCount();
-        scene = new Store();
+        carUpgradesInitializeFromFile();
+
+        storeScene = new Store(this);
+        mainMenuScene = new MainMenu(this);
+        currentScene = mainMenuScene;
     }
 
     @Override
     public void render() {
-        scene.render();
+        currentScene.render();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        img.dispose();
+        storeScene.dispose();
+        mainMenuScene.dispose();
     }
 
     public static void WriteCarsUpgradesInFile(){
@@ -130,5 +133,17 @@ public class Racing extends ApplicationAdapter {
             }
         }
         System.out.println();
+    }
+
+    public void setCurrentScene(Scene currentScene) {
+        this.currentScene = currentScene;
+    }
+
+    public Scene getStoreScene() {
+        return storeScene;
+    }
+
+    public Scene getMainMenuScene() {
+        return mainMenuScene;
     }
 }
