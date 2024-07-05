@@ -11,20 +11,24 @@ import java.util.ArrayList;
 public class Car {
 
     private int speed;
+    private int positionCar;
     private String name;
-    private Texture storeTexture;
-    private String storePath;
+    private Texture carTexture;
+    private String carPath;
+    private int borderLeft;
+    private int borderRight;
     private boolean isPurchased = false;
 
     private ArrayList<AbstractUpgrade> upgrades = new ArrayList<>();
 
-    public Car(String storePath, String name, int speed, boolean isPurchased) {
-        storeTexture = new Texture(Gdx.files.internal(storePath));
+    public Car(String carPath, String name, int speed, boolean isPurchased) {
+        carTexture = new Texture(Gdx.files.internal(carPath));
         this.name = name;
-        this.storePath = storePath;
+        this.carPath = carPath;
         this.speed = speed;
         this.isPurchased = isPurchased;
     }
+
 
     public void setPurchased() {
         isPurchased = true;
@@ -46,12 +50,23 @@ public class Car {
         return name;
     }
 
-    public Texture getStoreTexture() {
-        return storeTexture;
+    public Texture getCarTexture() {
+        return carTexture;
     }
 
-    public String getStorePath() {
-        return storePath;
+    public String getCarPath() {
+        return carPath;
     }
 
+    public void setBorderLeft(int borderLeft){this.borderLeft=borderLeft;}
+
+    public void setBorderRight(int borderRight){this.borderRight=borderRight;}
+
+    public int getBorderLeft(){return borderLeft;}
+
+    public int getBorderRight(){return borderRight;}
+
+    public void setPositionCar(int positionCar){this.positionCar=positionCar;}
+
+    public int getPositionCar(){return positionCar;}
 }

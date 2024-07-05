@@ -66,7 +66,7 @@ public class Store implements Scene {
         pad = padRight;
 
         for (int i = 0; i < cars.size(); i++) {
-            Image image = new Image(cars.get(i).getStoreTexture());
+            Image image = new Image(cars.get(i).getCarTexture());
             if (i == cars.size() - 1) {
                 scrollTable.add(image).width(carWidth).height(carHeight);
             } else scrollTable.add(image).width(carWidth).height(carHeight).padRight(padRight);
