@@ -11,7 +11,6 @@ public class GameMusic {
     private Music gameMusic;
     private Sound menuClickSound;
 
-
     private static GameMusic object;
 
     private GameMusic(){
@@ -30,7 +29,7 @@ public class GameMusic {
         }
         if (localOrInternal) {
             try {
-                gameMusic = Gdx.audio.newMusic(Gdx.files.local(musicPath));
+                gameMusic = Gdx.audio.newMusic(Gdx.files.absolute(musicPath));
             }catch (GdxRuntimeException ex){
                 gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
             }

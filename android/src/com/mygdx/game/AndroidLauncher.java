@@ -7,6 +7,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -149,8 +150,13 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
 
     @Override
     public void openFileChooser() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("audio/*");
-        startActivityForResult(intent, 1);
+        try {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("audio/*");
+            startActivityForResult(intent, 1);
+        }catch (ActivityNotFoundException ex){
+            filepath = "Not found";
+            runOnUiThread(() -> Toast.makeText(context, "Не удалось запустить приложение для выбора музыки", Toast.LENGTH_SHORT).show());
+        }
     }
 }

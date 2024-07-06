@@ -84,11 +84,14 @@ public class MainMenu implements Scene {
                     } while (path == null);
                     if (path.equals("Closed")) {
                         System.out.println(path);
-                    } else if (new File(path).exists()) {
+                    }
+                    if(path.equals("Not found")){
+                        return;
+                    }
+                    if (new File(path).exists()) {
                         Music music = Gdx.audio.newMusic(Gdx.files.absolute(path));
                         GameMusic commonMusic = GameMusic.MusicInitialize();
-                        commonMusic.getMenuMusic().stop();
-                        music.play();
+                        commonMusic.setGameMusic(music,path);
                     }
                 }).start();
             }
