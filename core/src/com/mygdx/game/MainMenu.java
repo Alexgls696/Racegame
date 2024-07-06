@@ -28,7 +28,7 @@ public class MainMenu implements Scene {
     private SpriteBatch backgroundSprite;
     private Texture backgroundTexture;
     private final int SCREEN_WIDTH = Gdx.graphics.getWidth();
-    ;
+
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
     private GameMusic gameMusic;
 
@@ -54,46 +54,8 @@ public class MainMenu implements Scene {
         settingButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                new Thread(() -> {
-                    String permissionStatus = null;
-                    racing.activity.checkPermission();
-                    boolean permissionOk = false;
-                    try {
-                        while (permissionStatus == null) {
-                            permissionStatus = racing.activity.getAudioPermission();
-                            Thread.sleep(100);
-                        }
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (permissionStatus.equals("OK")) {
-                        permissionOk = true;
-                    }
-                    if (!permissionOk) {
-                        return;
-                    }
-                    String path;
-                    racing.activity.openFileChooser();
-                    do {
-                        try {
-                            path = racing.activity.getAudioFilePath();
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } while (path == null);
-                    if (path.equals("Closed")) {
-                        System.out.println(path);
-                    }
-                    if(path.equals("Not found")){
-                        return;
-                    }
-                    if (new File(path).exists()) {
-                        Music music = Gdx.audio.newMusic(Gdx.files.absolute(path));
-                        GameMusic commonMusic = GameMusic.MusicInitialize();
-                        commonMusic.setGameMusic(music,path);
-                    }
-                }).start();
+                racing.setCurrentScene(racing.getSettingScene());
+                Gdx.input.setInputProcessor(Settings.stage);
             }
         });
 
@@ -135,6 +97,7 @@ public class MainMenu implements Scene {
         backgroundSprite = new SpriteBatch();
         ButtonsInit(racing);
         this.racing = racing;
+
         gameMusic = GameMusic.MusicInitialize();
         gameMusic.getMenuMusic().play();
     }

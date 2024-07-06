@@ -11,9 +11,12 @@ public class GameMusic {
     private Music gameMusic;
     private Sound menuClickSound;
 
+    private Music defaultGameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
+
     private static GameMusic object;
 
-    private GameMusic(){
+    private GameMusic()
+    {
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/menu.mp3"));
         FileHandle handle = null;
         String musicPath = "";
@@ -24,33 +27,31 @@ public class GameMusic {
             musicPath = handle.readString();
             localOrInternal = true;
         } catch (Exception e) {
-            handle = Gdx.files.internal("Sound/SelectedGameMusic.txt");
-            musicPath = handle.readString();
+            gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
         }
         if (localOrInternal) {
             try {
                 gameMusic = Gdx.audio.newMusic(Gdx.files.absolute(musicPath));
-            }catch (GdxRuntimeException ex){
+            } catch (GdxRuntimeException ex) {
                 gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
             }
-        }else{
-            gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
         }
     }
 
-    private void WriteLastGameMusicInFile(String path){
+    private void WriteLastGameMusicInFile(String path) {
         FileHandle handle = Gdx.files.local("Sound/SelectedGameMusic.txt");
-        handle.writeString(path,false);
+        handle.writeString(path, false);
     }
 
-    public static GameMusic MusicInitialize(){
-      if(object==null){
-          object = new GameMusic();
-      }
-      return object;
+    public static GameMusic MusicInitialize() //Первая инициализация в MainMenu
+    {
+        if (object == null) {
+            object = new GameMusic();
+        }
+        return object;
     }
 
-    public void setVolume(int volume){
+    public void setVolume(int volume) {
         gameMusic.setVolume((float) volume);
         menuMusic.setVolume((float) volume);
     }
@@ -70,5 +71,9 @@ public class GameMusic {
 
     public Sound getMenuClickSound() {
         return menuClickSound;
+    }
+
+    public Music getDefaultGameMusic() {
+        return defaultGameMusic;
     }
 }

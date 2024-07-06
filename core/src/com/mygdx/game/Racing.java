@@ -27,6 +27,7 @@ public class Racing extends ApplicationAdapter {
     private Scene storeScene;
     private Scene currentScene;
     private Scene mainMenuScene;
+    private Settings settingScene;
     private Scene game;
 
     public static ArrayList<Car> cars;
@@ -46,8 +47,11 @@ public class Racing extends ApplicationAdapter {
         money = ReadMoneyCount();
         storeScene = new Store(this);
         mainMenuScene = new MainMenu(this);
-        currentScene = mainMenuScene;
 
+        settingScene = Settings.InitializeSettings(mainMenuScene,MainMenu.menuStage);
+        settingScene.setRacing(this);
+
+        currentScene = mainMenuScene;
     }
 
     @Override
@@ -169,4 +173,8 @@ public class Racing extends ApplicationAdapter {
     public void setGameScene(Scene game){this.game=game;}
 
     public Scene getGameScene(){return game;}
+
+    public Scene getSettingScene() {
+        return settingScene;
+    }
 }
