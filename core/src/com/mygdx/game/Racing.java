@@ -10,8 +10,14 @@ import com.mygdx.game.Cars.Car;
 import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
+import com.mygdx.game.Music.GameMusic;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class Racing extends ApplicationAdapter {
@@ -22,17 +28,26 @@ public class Racing extends ApplicationAdapter {
     private Scene currentScene;
     private Scene mainMenuScene;
     private Scene game;
-    public static ArrayList<Car> cars;
 
+    public static ArrayList<Car> cars;
+    private GameMusic music;
+
+    GameMainActivity activity;
+
+    public Racing(GameMainActivity activity){
+        this.activity=activity;
+    }
 
     @Override
     public void create() {
         cars = carsInitialize();
         carUpgradesInitializeFromFile();
+
         money = ReadMoneyCount();
         storeScene = new Store(this);
         mainMenuScene = new MainMenu(this);
         currentScene = mainMenuScene;
+
     }
 
     @Override
