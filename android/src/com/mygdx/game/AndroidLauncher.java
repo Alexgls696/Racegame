@@ -20,13 +20,12 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class AndroidLauncher extends AndroidApplication implements GameMainActivity {
     private AlarmManager manager;
@@ -41,7 +40,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
         context = getApplicationContext();
 
         CheckNotificationPermission(Manifest.permission.POST_NOTIFICATIONS,NOTIFICATION_PERMISSION_CODE); //Проверка разрешения на уведомления
-        DailyNotificationReceiver.setDailyAlarm(context, 19, 0);
+        DailyNotificationReceiver.setDailyAlarm(context, 19, 57);
 
         initialize(new Racing(this), config);
     }

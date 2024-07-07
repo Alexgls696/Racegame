@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.Car;
 import com.mygdx.game.Cars.EnemyCar;
+import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 import com.mygdx.game.Music.GameMusic;
 
 import java.util.Random;
@@ -39,7 +40,7 @@ public class Game implements Scene{
     private static Texture field = new Texture("Game/Field.jpg");
     private static Texture desert = new Texture("Game/Desert.jpg");
     private static Texture endTexture = new Texture("Game/end.jpg");
-    private static Texture pauseTexture = new Texture("Game/pause.png");
+    private static Texture pauseTexture = new Texture("Game/pause.jpg");
     private Texture drawFonTexture1=field;
     private Texture drawFonTexture2=field;
     int positionFon1=0, positionFon2=2400;
@@ -57,6 +58,7 @@ public class Game implements Scene{
     boolean flag_score=false;
     boolean flag_end=false;
     boolean flag_pause=false;
+    boolean flag_money=false;
 
     EnemyCar[] enemyCar=new EnemyCar[6];
     SpriteBatch[] enemyCarBatch=new SpriteBatch[6];
@@ -101,6 +103,7 @@ public class Game implements Scene{
         flag_score=false;
         flag_end=false;
         flag_pause=false;
+        flag_money=false;
         gameCar.setPositionCar(gameCar.getBorderRight());
     }
 
@@ -120,6 +123,12 @@ public class Game implements Scene{
         enemyCarBatch[4]=new SpriteBatch();
         enemyCarBatch[5]=new SpriteBatch();
     }
+
+  /*  private void upgrades(){
+        if(gameCar.getUpgrades().get(0).getType()== AbstractUpgrade.UpgradeType.SLOW_MOTION){
+
+        }
+    }*/
 
     private void init_buttons() {
         ImageButton leftButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Left.png")));
@@ -207,6 +216,8 @@ public class Game implements Scene{
         mainMenuButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                GameMusic.MusicInitialize().getGameMusic().stop();
+                GameMusic.MusicInitialize().getMenuMusic().play();
                 racing.setCurrentScene(racing.getMainMenuScene());
                 Gdx.input.setInputProcessor(MainMenu.menuStage);
                 super.clicked(event, x, y);
@@ -261,6 +272,7 @@ public class Game implements Scene{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameMusic.MusicInitialize().getGameMusic().stop();
+                GameMusic.MusicInitialize().getMenuMusic().play();
                 racing.setCurrentScene(racing.getMainMenuScene());
                 Gdx.input.setInputProcessor(MainMenu.menuStage);
                 super.clicked(event, x, y);
@@ -413,14 +425,16 @@ public class Game implements Scene{
             endBatch.begin();
             endBatch.draw(endTexture, 0, 0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
             endBatch.end();
-
+            if(!flag_money){
+                flag_money=true;
+                Racing.money+=score;
+                Racing.WriteMoneyInFile();
+                MoneyTable.changeAndGetMoneyTable(Store.stage);
+            }
             stage_end.draw();
         } else if(flag_pause){
             pauseBatch.begin();
-            pauseBatch.draw(pauseTexture, (int)(250*Gdx.graphics.getWidth() / 1080),
-                    (int)(290*Gdx.graphics.getHeight() / 2400),
-                    (int)(pauseTexture.getWidth()*Gdx.graphics.getWidth() / 2400),
-                    (int)(pauseTexture.getHeight()*Gdx.graphics.getHeight() / 1080));
+            pauseBatch.draw(pauseTexture, 0, 0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
             pauseBatch.end();
 
             stage_pause.draw();
