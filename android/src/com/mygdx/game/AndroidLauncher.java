@@ -18,53 +18,41 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-
-import java.util.Calendar;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 
 
 public class AndroidLauncher extends AndroidApplication implements GameMainActivity {
     private AlarmManager manager;
     private Context context;
+    private static final int AUDIO_PERMISSION_CODE = 100;
+    private static final int NOTIFICATION_PERMISSION_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //startAlarmBroadcastReceiver(this);
-        // NotificationReceiver.scheduleNotification(this, 5, "Notification", "Something text");
-
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         context = getApplicationContext();
+
+        CheckNotificationPermission(Manifest.permission.POST_NOTIFICATIONS,NOTIFICATION_PERMISSION_CODE); //Проверка разрешения на уведомления
+        DailyNotificationReceiver.setDailyAlarm(context, 19, 0);
+
         initialize(new Racing(this), config);
     }
 
-
-    public static void startAlarmBroadcastReceiver(Context context) {
-        Intent _intent = new Intent(context, AlarmBroadcastReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, _intent, PendingIntent.FLAG_MUTABLE);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(pendingIntent);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 18);
-        calendar.set(Calendar.MINUTE, 51);
-        calendar.set(Calendar.SECOND, 0);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+    public void CheckNotificationPermission(String permission, int requestCode){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
+                ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
+            }
+        }
     }
-
-    private static final int AUDIO_PERMISSION_CODE = 100;
 
     public void checkPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
@@ -79,7 +67,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == AUDIO_PERMISSION_CODE) {
+        if (requestCode == AUDIO_PERMISSION_CODE||requestCode==NOTIFICATION_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 runOnUiThread(() -> Toast.makeText(context, "Разрешение получено", Toast.LENGTH_SHORT).show());
                 permissionStatus = "OK";
@@ -100,7 +88,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
             Uri uri = data.getData();
             Toast.makeText(context, uri.getPath(), Toast.LENGTH_SHORT).show();
             filepath = getPathFromUri(uri);
-        } else {
+        } else{
             filepath = "Closed";
         }
     }
