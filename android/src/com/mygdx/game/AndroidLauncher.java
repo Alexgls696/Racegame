@@ -93,7 +93,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
             }
             Uri uri = data.getData();
             Toast.makeText(context, uri.getPath(), Toast.LENGTH_SHORT).show();
-            filepath = getPathFromUri(context, uri);
+            filepath = getPathFromUri(context,uri);
         } else {
             filepath = "Closed";
         }
@@ -123,7 +123,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
         } else if ("file".equals(uri.getScheme())) {
             return uri.getPath();
         }
-        return null;
+        return "Closed";
     }
 
     private String filepath;

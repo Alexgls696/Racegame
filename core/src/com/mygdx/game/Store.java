@@ -38,9 +38,6 @@ public class Store implements Scene {
 
     private final int screen_width = Gdx.graphics.getWidth();
 
-    private final int my_screen_height = 2400;
-    private final int my_screen_width = 1080;
-
     private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
     private Label.LabelStyle style = new Label.LabelStyle();
 
@@ -52,8 +49,6 @@ public class Store implements Scene {
     private ScrollPane scroller;
     private ArrayList<Car> cars;
 
-    private float specificationPositionX;
-    private float specificationPositionY;
     private Scene upgradesScene;
 
     private float fontScale = screen_width / 1280;

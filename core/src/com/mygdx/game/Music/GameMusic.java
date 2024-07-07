@@ -45,6 +45,7 @@ public class GameMusic {
             object.gameMusic.stop();
         }
         object.gameMusic = gameMusic;
+        object.gameMusic.setLooping(true);
     }
 
     public Music getMenuMusic() {

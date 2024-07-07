@@ -12,7 +12,10 @@ import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
 import com.mygdx.game.Music.GameMusic;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -35,9 +38,11 @@ public class Racing extends ApplicationAdapter {
 
     GameMainActivity activity;
 
-    public Racing(GameMainActivity activity){
-        this.activity=activity;
+    public Racing(GameMainActivity activity) {
+        this.activity = activity;
     }
+
+    private ArrayList<DailyTask> tasks;
 
     @Override
     public void create() {
@@ -48,12 +53,17 @@ public class Racing extends ApplicationAdapter {
         storeScene = new Store(this);
         mainMenuScene = new MainMenu(this);
 
-        settingScene = Settings.InitializeSettings(mainMenuScene,MainMenu.menuStage);
+        settingScene = Settings.InitializeSettings(mainMenuScene, MainMenu.menuStage);
         settingScene.setRacing(this);
-
         currentScene = mainMenuScene;
 
         GameMusic.MusicInitialize().getMenuMusic().play();
+        GameMusic.MusicInitialize().getMenuMusic().setLooping(true);
+
+        tasks = DailyTask.getCurrentDailyTasks();
+
+        LocalDateTime lastTime = DailyTask.lastTime;
+        System.out.println();
     }
 
     @Override
@@ -67,27 +77,28 @@ public class Racing extends ApplicationAdapter {
         mainMenuScene.dispose();
     }
 
-    public static void WriteCarsUpgradesInFile(){
-        new Thread(()->{
+    public static void WriteCarsUpgradesInFile() {
+        new Thread(() -> {
             FileHandle handle = Gdx.files.local("Cars/upgrades_list.txt");
             StringBuilder builder = new StringBuilder();
-            for(Car car: cars){
-                builder.append(car.getName().replace(" ","_")+" ");
-                for(AbstractUpgrade upgrade: car.getUpgrades()){
-                    builder.append(upgrade.getType()+"="+upgrade.isPurchased()+" ");
+            for (Car car : cars) {
+                builder.append(car.getName().replace(" ", "_") + " ");
+                for (AbstractUpgrade upgrade : car.getUpgrades()) {
+                    builder.append(upgrade.getType() + "=" + upgrade.isPurchased() + " ");
                 }
                 builder.append("\r\n");
             }
             handle.writeString(builder.toString(), false);
         }).start();
     }
+
     public static void WriteCarsInformationInFile() {
         new Thread(() -> {
             FileHandle handle = Gdx.files.local("Cars/car_list.txt");
             String line;
             StringBuffer buffer = new StringBuffer();
             for (Car car : cars) {
-                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " "+car.getBorderRight() + " "+car.getBorderLeft()+"\r\n";
+                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " " + car.getBorderRight() + " " + car.getBorderLeft() + "\r\n";
                 buffer.append(line);
             }
             handle.writeString(buffer.toString(), false);
@@ -126,7 +137,7 @@ public class Racing extends ApplicationAdapter {
         String[] car_lines = line.split("\r\n");
         for (String it : car_lines) {
             String[] split = it.split(" ");
-            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n").replaceFirst("_", " "), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Boolean.parseBoolean(split[4]), Integer.parseInt(split[5]),Integer.parseInt(split[6])));
+            cars.add(new Car(split[0], split[1].replaceFirst("_", "\n").replaceFirst("_", " "), Integer.parseInt(split[2]), Integer.parseInt(split[3]), Boolean.parseBoolean(split[4]), Integer.parseInt(split[5]), Integer.parseInt(split[6])));
         }
         return cars;
     }
@@ -172,9 +183,13 @@ public class Racing extends ApplicationAdapter {
         return mainMenuScene;
     }
 
-    public void setGameScene(Scene game){this.game=game;}
+    public void setGameScene(Scene game) {
+        this.game = game;
+    }
 
-    public Scene getGameScene(){return game;}
+    public Scene getGameScene() {
+        return game;
+    }
 
     public Scene getSettingScene() {
         return settingScene;
