@@ -52,6 +52,8 @@ public class Racing extends ApplicationAdapter {
         settingScene.setRacing(this);
 
         currentScene = mainMenuScene;
+
+        GameMusic.MusicInitialize().getMenuMusic().play();
     }
 
     @Override

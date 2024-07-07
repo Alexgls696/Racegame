@@ -97,9 +97,6 @@ public class MainMenu implements Scene {
         backgroundSprite = new SpriteBatch();
         ButtonsInit(racing);
         this.racing = racing;
-
-        gameMusic = GameMusic.MusicInitialize();
-        gameMusic.getMenuMusic().play();
     }
 
     @Override

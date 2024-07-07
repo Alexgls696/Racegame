@@ -10,6 +10,7 @@ public class GameMusic {
     private Music menuMusic = null;
     private Music gameMusic;
     private Sound menuClickSound;
+    private String gameMusicPath;
 
     private Music defaultGameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
 
@@ -18,30 +19,8 @@ public class GameMusic {
     private GameMusic()
     {
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/menu.mp3"));
-        FileHandle handle = null;
-        String musicPath = "";
-
-        boolean localOrInternal = false;
-        try {
-            handle = Gdx.files.local("Sound/SelectedGameMusic.txt");
-            musicPath = handle.readString();
-            localOrInternal = true;
-        } catch (Exception e) {
-            gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
-        }
-        if (localOrInternal) {
-            try {
-                gameMusic = Gdx.audio.newMusic(Gdx.files.absolute(musicPath));
-            } catch (GdxRuntimeException ex) {
-                gameMusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
-            }
-        }
     }
 
-    private void WriteLastGameMusicInFile(String path) {
-        FileHandle handle = Gdx.files.local("Sound/SelectedGameMusic.txt");
-        handle.writeString(path, false);
-    }
 
     public static GameMusic MusicInitialize() //Первая инициализация в MainMenu
     {
@@ -51,29 +30,41 @@ public class GameMusic {
         return object;
     }
 
-    public void setVolume(int volume) {
-        gameMusic.setVolume((float) volume);
-        menuMusic.setVolume((float) volume);
+    public void setVolume(boolean volume) {
+        if (volume) {
+            object.gameMusic.setVolume(1);
+            object.menuMusic.setVolume(1);
+        }else{
+            object.gameMusic.setVolume(0);
+            object.menuMusic.setVolume(0);
+        }
     }
 
-    public void setGameMusic(Music gameMusic, String path) {
-        this.gameMusic = gameMusic;
-        WriteLastGameMusicInFile(path);
+    public void setGameMusic(Music gameMusic) {
+        object.gameMusic = gameMusic;
     }
 
     public Music getMenuMusic() {
-        return menuMusic;
+        return object.menuMusic;
     }
 
     public Music getGameMusic() {
-        return gameMusic;
+        return object.gameMusic;
     }
 
     public Sound getMenuClickSound() {
-        return menuClickSound;
+        return object.menuClickSound;
     }
 
     public Music getDefaultGameMusic() {
-        return defaultGameMusic;
+        return object.defaultGameMusic;
+    }
+
+    public String getGameMusicPath() {
+        return object.gameMusicPath;
+    }
+
+    public void setGameMusicPath(String gameMusicPath) {
+        object.gameMusicPath = gameMusicPath;
     }
 }

@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.mygdx.game.Music.GameMusic;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 
 public class Settings implements Scene {
@@ -25,9 +27,6 @@ public class Settings implements Scene {
     private SpriteBatch backgroundSprite;
 
     public static Stage stage;
-
-    private Stage prevStage;
-    private Scene prevScene;
 
     private static Settings object;
     private BitmapFont descriptionFont;
@@ -43,34 +42,59 @@ public class Settings implements Scene {
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
     private boolean volume = true;
+    private boolean accelerometerFlag = false;
 
-    private void ReadMusicVolumeFromFile() {
+    private void ReadSettingFromFile() {
+        FileHandle handle = null;
+        String line = "";
         try {
-            FileHandle handle = Gdx.files.local("settings.txt");
-            String line = handle.readString();
-            volume = Boolean.parseBoolean(line);
-        } catch (GdxRuntimeException ignored) {
-
+            handle = Gdx.files.local("Settings/settings.txt");
+            line = handle.readString();
+        } catch (GdxRuntimeException ex) {
+            handle = Gdx.files.internal("Settings/settings.txt");
+            line = handle.readString();
         } finally {
+            String[] lines = line.split("\r\n");
             GameMusic music = GameMusic.MusicInitialize();
-            if (volume) {
-                music.setVolume(100);
-            } else music.setVolume(0);
+
+            String musicPath = lines[0].split("=")[1];
+            Music gamemusic = null;
+            if (musicPath.equals("standart")) {
+                gamemusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
+            } else {
+                try {
+                    gamemusic = Gdx.audio.newMusic(Gdx.files.absolute(musicPath));
+                    music.setGameMusicPath(musicPath);
+                } catch (GdxRuntimeException ex) {
+                    gamemusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
+                    music.setGameMusicPath("standart");
+                }
+            }
+            music.setGameMusic(gamemusic);
+
+            accelerometerFlag = Boolean.parseBoolean(lines[1].split("=")[1]);
+            volume = Boolean.parseBoolean(lines[2].split("=")[1]);
+            music.setVolume(volume);
         }
     }
 
-    private void WriteVolumeFromFile(boolean value) {
-        FileHandle handle = Gdx.files.local("settings.txt");
-        handle.writeString(value + "", false);
+    private void WriteSettingsToFile() {
+        String musicpath = GameMusic.MusicInitialize().getGameMusicPath();
+        FileHandle handle = Gdx.files.local("Settings/settings.txt");
+        String writeLine = "musicPath=" + musicpath + "\r\n" +
+                "accelerometer=" + accelerometerFlag + "\r\n" +
+                "volume=" + volume;
+        handle.writeString(writeLine, false);
     }
 
     private Settings() {
         backgroundSprite = new SpriteBatch();
         stage = new Stage();
-        ReadMusicVolumeFromFile();
+
+        ReadSettingFromFile();
+
         InitializeFontAndStyles();
         InitTextures();
-
         stage.addActor(InitializeContent());
     }
 
@@ -78,14 +102,11 @@ public class Settings implements Scene {
         if (object == null) {
             object = new Settings();
         }
-        object.prevScene = currentScene;
-        object.prevStage = currentStage;
-
         object.InitBackButton(currentScene, currentStage);
         return object;
     }
 
-    private float scaleFont = (float) SCREEN_WIDTH / 2200;
+    private float scaleFont = (float) SCREEN_WIDTH / 2400;
 
     private void InitializeFontAndStyles() {
         descriptionFont = new BitmapFont(Gdx.files.internal("font.fnt"));
@@ -105,6 +126,8 @@ public class Settings implements Scene {
     private Texture volumeOffHoverTexture;
     private Texture resetTexture;
     private Texture resetHoverTexture;
+    private Texture okTexture;
+    private Texture noTexture;
 
     private void InitTextures() {
         searchTexture = new Texture(Gdx.files.internal("Settings/search.png"));
@@ -115,6 +138,8 @@ public class Settings implements Scene {
         volumeOffHoverTexture = new Texture(Gdx.files.internal("Settings/volume_off_hover.png"));
         resetTexture = new Texture(Gdx.files.internal("Settings/reset.png"));
         resetHoverTexture = new Texture(Gdx.files.internal("Settings/reset_hover.png"));
+        okTexture = new Texture(Gdx.files.internal("Settings/ok.png"));
+        noTexture = new Texture(Gdx.files.internal("Settings/no.png"));
     }
 
     private static Texture backTexture = new Texture(Gdx.files.internal("Store/left.png"));
@@ -180,7 +205,9 @@ public class Settings implements Scene {
             if (new File(path).exists()) {
                 Music music = Gdx.audio.newMusic(Gdx.files.absolute(path));
                 GameMusic gameMusic = GameMusic.MusicInitialize();
-                gameMusic.setGameMusic(music, path);
+                gameMusic.setGameMusic(music);
+                gameMusic.setGameMusicPath(path);
+                WriteSettingsToFile();
             }
         }).start();
     }
@@ -198,8 +225,8 @@ public class Settings implements Scene {
         stage.addActor(descriptionLabel);
 
         float width = SCREEN_WIDTH / 3f;
-        float height = SCREEN_HEIGHT / 4f;
-        int padRight = 25;
+        float height = SCREEN_HEIGHT / 5f;
+        int pad = 60;
 
         Table table = new Table();
         table.setName("settingTable");
@@ -220,14 +247,14 @@ public class Settings implements Scene {
                 if (volumeButton.getName().equals("ON")) {
                     GameMusic music = GameMusic.MusicInitialize();
                     volume = false;
-                    music.setVolume(0);
-                    WriteVolumeFromFile(volume);
+                    music.setVolume(volume);
+                    WriteSettingsToFile();
                     stage.addActor(InitializeContent());
                 } else if (volumeButton.getName().equals("OFF")) {
                     GameMusic music = GameMusic.MusicInitialize();
-                    music.setVolume(1);
                     volume = true;
-                    WriteVolumeFromFile(volume);
+                    music.setVolume(volume);
+                    WriteSettingsToFile();
                     stage.addActor(InitializeContent());
                 }
             }
@@ -242,22 +269,23 @@ public class Settings implements Scene {
 
         Button resetButton = new Button(new TextureRegionDrawable(resetTexture), new TextureRegionDrawable(resetHoverTexture));
 
-        resetButton.addListener(new ClickListener(){
+        resetButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 GameMusic music = GameMusic.MusicInitialize();
-                music.setGameMusic(music.getDefaultGameMusic(),"zero");
+                music.setGameMusic(music.getDefaultGameMusic());
+                music.setGameMusicPath("standart");
+                WriteSettingsToFile();
             }
         });
         Label searchMusicLabel = new Label("Выбрать свою музыку во время игры", simpleStyle);
         Label resetMusicLabel = new Label("Сброс", simpleStyle);
 
         table.add(searchMusicLabel).width(searchMusicLabel.getWidth()).height(searchMusicLabel.getHeight());
-        table.add(resetMusicLabel).width(resetMusicLabel.getWidth()).height(resetMusicLabel.getHeight()).row();
-        ;
+        table.add(resetMusicLabel).width(resetMusicLabel.getWidth()).height(resetMusicLabel.getHeight()).padLeft(pad).row();
 
-        table.add(searchMusicButton).width(searchMusicLabel.getWidth()).height(height).padRight(padRight);
-        table.add(resetButton).width(height).height(height).row();
+        table.add(searchMusicButton).width(searchMusicLabel.getWidth()).height(height);
+        table.add(resetButton).width(height).height(height).padLeft(pad).row();
 
         Label volumeLabel;
         if (volume) {
@@ -269,10 +297,37 @@ public class Settings implements Scene {
         Table helpTable = new Table();
         helpTable.add(volumeLabel).width(volumeLabel.getWidth()).height(volumeLabel.getHeight()).row();
         helpTable.add(volumeButton).width(searchMusicLabel.getWidth()).height(height).row();
-        table.add(helpTable).padTop(height / 4f);
+        table.add(helpTable).padTop(pad / 2f).row();
+
+        Label accelerometerLabel = new Label("Управление акселерометром", simpleStyle);
+        Button accelerometerEnableButton;
+        if (accelerometerFlag) {
+            accelerometerEnableButton = new Button(new TextureRegionDrawable(okTexture));
+            accelerometerEnableButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    accelerometerFlag = false;
+                    WriteSettingsToFile();
+                    stage.addActor(InitializeContent());
+                }
+            });
+        } else {
+            accelerometerEnableButton = new Button(new TextureRegionDrawable(noTexture));
+            accelerometerEnableButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    accelerometerFlag = true;
+                    WriteSettingsToFile();
+                    stage.addActor(InitializeContent());
+                }
+            });
+        }
+        table.add(accelerometerLabel).width(searchMusicLabel.getWidth()).height(accelerometerLabel.getHeight()).padTop(height/2f);
+        table.add(accelerometerEnableButton).width(height/2f).height(height/2f).padTop(height/2f);
 
         table.setSize(searchMusicLabel.getWidth(), searchMusicLabel.getHeight() + height);
         table.setPosition(SCREEN_WIDTH / 2f - table.getWidth() / 2f, SCREEN_HEIGHT / 3f);
+        long after = System.currentTimeMillis();
         return table;
     }
 
@@ -300,4 +355,7 @@ public class Settings implements Scene {
 
     }
 
+    public boolean isAccelerometerFlag() {
+        return accelerometerFlag;
+    }
 }

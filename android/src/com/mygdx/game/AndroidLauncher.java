@@ -66,7 +66,6 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
 
     private static final int AUDIO_PERMISSION_CODE = 100;
 
-
     public void checkPermission(String permission, int requestCode) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
