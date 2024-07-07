@@ -1,0 +1,3 @@
+musicpath=standart
+accelerometer=false
+volume=true

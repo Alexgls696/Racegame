@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.Car;
 import com.mygdx.game.Cars.EnemyCar;
+import com.mygdx.game.Music.GameMusic;
 
 import java.util.Random;
 
@@ -49,6 +50,8 @@ public class Game implements Scene{
     boolean flag_gas=false, flag_breake=false;
     static int positionCarY=100;
 
+    private GameMusic music;
+
     int score=0;
     boolean flag_score=false;
     boolean flag_end=false;
@@ -79,6 +82,10 @@ public class Game implements Scene{
         init_buttons();
         create();
         createEnemyCars();
+
+        music = GameMusic.MusicInitialize();
+        music.getMenuMusic().stop();
+        music.getGameMusic().play();
     }
     public void create()
     {
