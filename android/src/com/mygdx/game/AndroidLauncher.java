@@ -27,6 +27,12 @@ import androidx.core.content.ContextCompat;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 
 public class AndroidLauncher extends AndroidApplication implements GameMainActivity {
     private AlarmManager manager;
@@ -87,30 +93,37 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
             }
             Uri uri = data.getData();
             Toast.makeText(context, uri.getPath(), Toast.LENGTH_SHORT).show();
-            filepath = getPathFromUri(uri);
+            filepath = getPathFromUri(context, uri);
         } else {
             filepath = "Closed";
         }
     }
 
-    public String getPathFromUri(Uri uri) {
-        if (uri == null) {
-            return null;
-        }
+    public String getPathFromUri(Context context, Uri uri) {
         if ("content".equals(uri.getScheme())) {
-            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
-            if (cursor != null && cursor.moveToFirst()) {
-                int index = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
-                if (index != -1) {
-                    String path = cursor.getString(index);
-                    cursor.close();
-                    return path;
+            String[] projection = { MediaStore.MediaColumns.DISPLAY_NAME };
+            try (Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
+                    String displayName = cursor.getString(index);
+                    File file = new File(context.getExternalFilesDir(null), displayName);
+                    try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                         OutputStream outputStream = new FileOutputStream(file)) {
+                        byte[] buffer = new byte[1024];
+                        int bytesRead;
+                        while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, bytesRead);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return file.getPath();
                 }
             }
         } else if ("file".equals(uri.getScheme())) {
             return uri.getPath();
         }
-        return "Closed";
+        return null;
     }
 
     private String filepath;
@@ -142,7 +155,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
     @Override
     public void openFileChooser() {
         try {
-            Intent intent = new Intent(Intent.ACTION_PICK);
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("audio/*");
             startActivityForResult(intent, 1);
         } catch (ActivityNotFoundException ex) {

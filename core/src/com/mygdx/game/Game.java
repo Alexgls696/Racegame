@@ -132,7 +132,7 @@ public class Game implements Scene{
 
     private void init_buttons() {
         ImageButton leftButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Left.png")));
-        leftButton.setPosition((int)(10*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        leftButton.setPosition((int)(30*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
         leftButton.getImage().setFillParent(true);
         leftButton.addListener(new ClickListener(){
             @Override
@@ -147,7 +147,7 @@ public class Game implements Scene{
         stage.addActor(leftButton);
 
         ImageButton rightButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Right.png")));
-        rightButton.setPosition((int)(130*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        rightButton.setPosition((int)(160*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
         rightButton.getImage().setFillParent(true);
         rightButton.addListener(new ClickListener(){
             @Override
@@ -162,7 +162,7 @@ public class Game implements Scene{
         stage.addActor(rightButton);
 
         ImageButton gasButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Gas.png")));
-        gasButton.setPosition((int)(950*Gdx.graphics.getWidth() / 1080), (int)(240*Gdx.graphics.getHeight() / 2400));
+        gasButton.setPosition((int)(950*Gdx.graphics.getWidth() / 1080), (int)(290*Gdx.graphics.getHeight() / 2400));
         gasButton.getImage().setFillParent(true);
         gasButton.addListener(new ClickListener(){
             @Override
@@ -177,7 +177,7 @@ public class Game implements Scene{
         stage.addActor(gasButton);
 
         ImageButton breakeButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Breake.png")));
-        breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(370*Gdx.graphics.getHeight() / 2400));
         breakeButton.getImage().setFillParent(true);
         breakeButton.addListener(new ClickListener(){
             @Override
