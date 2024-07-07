@@ -162,7 +162,7 @@ public class Game implements Scene{
         stage.addActor(rightButton);
 
         ImageButton gasButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Gas.png")));
-        gasButton.setPosition((int)(950*Gdx.graphics.getWidth() / 1080), (int)(290*Gdx.graphics.getHeight() / 2400));
+        gasButton.setPosition((int)(950*Gdx.graphics.getWidth() / 1080), (int)(300*Gdx.graphics.getHeight() / 2400));
         gasButton.getImage().setFillParent(true);
         gasButton.addListener(new ClickListener(){
             @Override
@@ -177,7 +177,7 @@ public class Game implements Scene{
         stage.addActor(gasButton);
 
         ImageButton breakeButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Breake.png")));
-        breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(370*Gdx.graphics.getHeight() / 2400));
+        breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(380*Gdx.graphics.getHeight() / 2400));
         breakeButton.getImage().setFillParent(true);
         breakeButton.addListener(new ClickListener(){
             @Override
@@ -193,7 +193,7 @@ public class Game implements Scene{
 
 
         ImageButton restartButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/restartButtonUp.png")),new TextureRegionDrawable(new Texture("Game/restartButtonDown.png")));
-        restartButton.setPosition((int)(330*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        restartButton.setPosition((int)(230*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
         restartButton.getImage().setFillParent(true);
         restartButton.addListener(new ClickListener(){
             @Override

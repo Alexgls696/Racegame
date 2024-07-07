@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 public class Store implements Scene {
     private Racing racing;//Для возврата в главное меню
 
+    private SpriteBatch storeBatch=new SpriteBatch();
+    private Texture storeTexture=new Texture("Store/garaje.jpg");
     private final int barCount = 4;
     private Bar[] bars = new Bar[barCount];
     public static Stage stage;
@@ -400,7 +403,9 @@ public class Store implements Scene {
         if (upgradesSceneFlag) {
             upgradesScene.render();
         } else {
-            ScreenUtils.clear(2, 0, 8, 0);
+            storeBatch.begin();
+            storeBatch.draw(storeTexture,0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            storeBatch.end();
             stage.act();
             stage.draw();
         }
