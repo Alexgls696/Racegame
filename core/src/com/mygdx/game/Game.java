@@ -23,6 +23,7 @@ import java.util.Random;
 
 public class Game implements Scene{
     private Racing racing;
+    private Settings settings;
     private Stage stage;
     private Stage stage_end;
     private Stage stage_pause;
@@ -86,6 +87,8 @@ public class Game implements Scene{
         music = GameMusic.MusicInitialize();
         music.getMenuMusic().stop();
         music.getGameMusic().play();
+
+        settings=Settings.InitializeSettings(this, stage_pause);
     }
     public void create()
     {
@@ -244,7 +247,8 @@ public class Game implements Scene{
         settingsButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
+                racing.setCurrentScene(racing.getSettingScene());
+                Gdx.input.setInputProcessor(Settings.stage);
                 super.clicked(event, x, y);
             }
         });
@@ -256,6 +260,7 @@ public class Game implements Scene{
         menuButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                GameMusic.MusicInitialize().getGameMusic().stop();
                 racing.setCurrentScene(racing.getMainMenuScene());
                 Gdx.input.setInputProcessor(MainMenu.menuStage);
                 super.clicked(event, x, y);
