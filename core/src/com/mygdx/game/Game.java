@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Cars.Car;
 import com.mygdx.game.Cars.EnemyCar;
@@ -20,15 +21,23 @@ import com.mygdx.game.Cars.EnemyCar;
 import java.util.Random;
 
 public class Game implements Scene{
+    private Racing racing;
     private Stage stage;
+    private Stage stage_end;
+    private Stage stage_pause;
     private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
     private Label.LabelStyle style = new Label.LabelStyle();
     Label resultLabel;
+    Label finalResultLabel;
 
     private SpriteBatch fon = new SpriteBatch();
     private SpriteBatch fon2 = new SpriteBatch();
+    private SpriteBatch endBatch = new SpriteBatch();
+    private SpriteBatch pauseBatch = new SpriteBatch();
     private static Texture field = new Texture("Game/Field.jpg");
     private static Texture desert = new Texture("Game/Desert.jpg");
+    private static Texture endTexture = new Texture("Game/end.jpg");
+    private static Texture pauseTexture = new Texture("Game/pause.png");
     private Texture drawFonTexture1=field;
     private Texture drawFonTexture2=field;
     int positionFon1=0, positionFon2=2400;
@@ -42,125 +51,210 @@ public class Game implements Scene{
 
     int score=0;
     boolean flag_score=false;
+    boolean flag_end=false;
+    boolean flag_pause=false;
 
     EnemyCar[] enemyCar=new EnemyCar[6];
     SpriteBatch[] enemyCarBatch=new SpriteBatch[6];
 
-    public Game(Car gameCar)
+    public Game(Car gameCar, Racing racing)
     {
+        this.racing=racing;
         this.gameCar=gameCar;
         stage = new Stage(new ScreenViewport());
+        stage_end=new Stage(new ScreenViewport());
+        stage_pause=new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        init_buttons();
-        create();
-        createEnemyCars();
-    }
-    public void create()
-    {
+
         font.getData().setScale(1.2f*Gdx.graphics.getWidth() / 1080, 2.0f*Gdx.graphics.getHeight() / 1080);
         style.font = font;
         style.fontColor = Color.WHITE;
         resultLabel = new Label(""+score, style);
         resultLabel.setPosition((int)(850*Gdx.graphics.getWidth() / 1080),(int)(2100*Gdx.graphics.getHeight() / 2400));
         stage.addActor(resultLabel);
+        finalResultLabel= new Label(""+score, style);
+        finalResultLabel.setPosition((int)(230*Gdx.graphics.getWidth() / 1080),(int)(1470*Gdx.graphics.getHeight() / 2400));
+        stage_end.addActor(finalResultLabel);
 
+        init_buttons();
+        create();
+        createEnemyCars();
+    }
+    public void create()
+    {
         score=0;
+        resultLabel.setText(""+score);
         positionFon1=0; positionFon2=2400;
+        flag_fon=false;
         flag_right=false; flag_left=false;
         flag_gas=false; flag_breake=false;
         flag_score=false;
-        gameCar.setBorderLeft(310);
-        gameCar.setBorderRight(690);
+        flag_end=false;
+        flag_pause=false;
         gameCar.setPositionCar(gameCar.getBorderRight());
     }
 
     private void createEnemyCars()
     {
-        enemyCar[0]=new EnemyCar("Cars/Enemies/RingLeft.png",-10, false);
-        enemyCar[1]=new EnemyCar("Cars/Enemies/NeVestaLeft.png",-10,false);
-        enemyCar[2]=new EnemyCar("Cars/Enemies/FuraLeft.png",-10, false);
+        enemyCar[0]=new EnemyCar("Cars/Enemies/RingLeft.png",-8, false);
+        enemyCar[1]=new EnemyCar("Cars/Enemies/NeVestaLeft.png",-8,false);
+        enemyCar[2]=new EnemyCar("Cars/Enemies/FuraLeft.png",-8, false);
         enemyCarBatch[0]=new SpriteBatch();
         enemyCarBatch[1]=new SpriteBatch();
         enemyCarBatch[2]=new SpriteBatch();
 
-        enemyCar[3]=new EnemyCar("Cars/Enemies/RingRight.png",10, false);
-        enemyCar[4]=new EnemyCar("Cars/Enemies/NeVestaRight.png",10,false);
-        enemyCar[5]=new EnemyCar("Cars/Enemies/FuraRight.png",10, false);
+        enemyCar[3]=new EnemyCar("Cars/Enemies/RingRight.png",8, false);
+        enemyCar[4]=new EnemyCar("Cars/Enemies/NeVestaRight.png",8,false);
+        enemyCar[5]=new EnemyCar("Cars/Enemies/FuraRight.png",8, false);
         enemyCarBatch[3]=new SpriteBatch();
         enemyCarBatch[4]=new SpriteBatch();
         enemyCarBatch[5]=new SpriteBatch();
     }
 
     private void init_buttons() {
-
         ImageButton leftButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Left.png")));
         leftButton.setPosition((int)(10*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
         leftButton.getImage().setFillParent(true);
-
         leftButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                flag_left=true;
                 return true;
             }
-
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 flag_left=false;
             }
         });
+        stage.addActor(leftButton);
 
         ImageButton rightButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Right.png")));
         rightButton.setPosition((int)(130*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
         rightButton.getImage().setFillParent(true);
-
         rightButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 flag_right=true;
                 return true;
             }
-
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 flag_right=false;
             }
         });
+        stage.addActor(rightButton);
 
         ImageButton gasButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Gas.png")));
-        gasButton.setPosition((int)(970*Gdx.graphics.getWidth() / 1080), (int)(240*Gdx.graphics.getHeight() / 2400));
+        gasButton.setPosition((int)(950*Gdx.graphics.getWidth() / 1080), (int)(240*Gdx.graphics.getHeight() / 2400));
         gasButton.getImage().setFillParent(true);
-
         gasButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 flag_gas=true;
                 return true;
             }
-
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 flag_gas=false;
             }
         });
+        stage.addActor(gasButton);
 
         ImageButton breakeButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Breake.png")));
         breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
         breakeButton.getImage().setFillParent(true);
-
         breakeButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 flag_breake=true;
                 return true;
             }
-
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 flag_breake=false;
             }
         });
-
-        stage.addActor(leftButton);
-        stage.addActor(rightButton);
-        stage.addActor(gasButton);
         stage.addActor(breakeButton);
+
+
+        ImageButton restartButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/restartButtonUp.png")),new TextureRegionDrawable(new Texture("Game/restartButtonDown.png")));
+        restartButton.setPosition((int)(330*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        restartButton.getImage().setFillParent(true);
+        restartButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.input.setInputProcessor(stage);
+                font.getData().setScale(1.2f*Gdx.graphics.getWidth() / 1080, 2.0f*Gdx.graphics.getHeight() / 1080);
+                for(int i=0;i<enemyCar.length;i++){
+                    enemyCar[i].setPositionY(2400);
+                    enemyCar[i].setGo(false);
+                }
+                create();
+                super.clicked(event, x, y);
+            }
+        });
+        stage_end.addActor(restartButton);
+
+        ImageButton mainMenuButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/menuButtonUp.png")),new TextureRegionDrawable(new Texture("Game/menuButtonDown.png")));
+        mainMenuButton.setPosition((int)(530*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        mainMenuButton.getImage().setFillParent(true);
+        mainMenuButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                racing.setCurrentScene(racing.getMainMenuScene());
+                Gdx.input.setInputProcessor(MainMenu.menuStage);
+                super.clicked(event, x, y);
+            }
+        });
+        stage_end.addActor(mainMenuButton);
+
+
+        ImageButton pauseButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/pauseButtonUp.png")),new TextureRegionDrawable(new Texture("Game/pauseButtonDown.png")));
+        pauseButton.setPosition((int)(25*Gdx.graphics.getWidth() / 1080), (int)(2125*Gdx.graphics.getHeight() / 2400));
+        pauseButton.getImage().setFillParent(true);
+        pauseButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                flag_pause=true;
+                Gdx.input.setInputProcessor(stage_pause);
+                super.clicked(event, x, y);
+            }
+        });
+        stage.addActor(pauseButton);
+
+        ImageButton continueButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/continueButtonUp.png")),new TextureRegionDrawable(new Texture("Game/continueButtonDown.png")));
+        continueButton.setPosition((int)(420*Gdx.graphics.getWidth() / 1080), (int)(1375*Gdx.graphics.getHeight() / 2400));
+        continueButton.getImage().setFillParent(true);
+        continueButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                flag_pause=false;
+                Gdx.input.setInputProcessor(stage);
+                super.clicked(event, x, y);
+            }
+        });
+        stage_pause.addActor(continueButton);
+
+        ImageButton settingsButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/settingsButtonUp.png")),new TextureRegionDrawable(new Texture("Game/settingsButtonDown.png")));
+        settingsButton.setPosition((int)(420*Gdx.graphics.getWidth() / 1080), (int)(875*Gdx.graphics.getHeight() / 2400));
+        settingsButton.getImage().setFillParent(true);
+        settingsButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+
+                super.clicked(event, x, y);
+            }
+        });
+        stage_pause.addActor(settingsButton);
+
+        ImageButton menuButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/menuButtonPauseUp.png")),new TextureRegionDrawable(new Texture("Game/menuButtonPauseDown.png")));
+        menuButton.setPosition((int)(420*Gdx.graphics.getWidth() / 1080), (int)(375*Gdx.graphics.getHeight() / 2400));
+        menuButton.getImage().setFillParent(true);
+        menuButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                racing.setCurrentScene(racing.getMainMenuScene());
+                Gdx.input.setInputProcessor(MainMenu.menuStage);
+                super.clicked(event, x, y);
+            }
+        });
+        stage_pause.addActor(menuButton);
     }
 
     private void enemySpawn()
@@ -241,13 +335,13 @@ public class Game implements Scene{
             score+=1;
             resultLabel.setText(""+score);
 
-            if(score%5==0 && score<=10){
+            if(score%4==0 && score<=8){
                 enemySpawn();
-            }else if(score%4==0 && score>10 && score<500){
+            }else if(score%3==0 && score>8 && score<=20){
                 enemySpawn();
-            }else if(score%3==0 && score>500 && score<1000){
+            }else if(score%2==0 && score>=20 && score<=40){
                 enemySpawn();
-            }else if(score%2==0 && score>1000){
+            }else if(score>40){
                 enemySpawn();
             }
 
@@ -283,23 +377,41 @@ public class Game implements Scene{
     }
     public void render()
     {
-        fonDraw();
-        motion();
-        carBatch.begin();
-        carBatch.draw(gameCar.getCarTexture(), (int)(gameCar.getPositionCar()*Gdx.graphics.getWidth() / 1080),
-                (int)(positionCarY*Gdx.graphics.getHeight() / 2400),
-                (int)(gameCar.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
-                (int)(gameCar.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
-        carBatch.end();
-        enemyDraw();
-        stage.draw();
-
-        for(int i=0;i<enemyCar.length;i++){
-            if(isCollisionEnemy(enemyCar[i]) && enemyCar[i].getGo())
-            {
-                //score=0;
-                resultLabel.setText(""+score);
+        if(!flag_end && !flag_pause){
+            fonDraw();
+            motion();
+            carBatch.begin();
+            carBatch.draw(gameCar.getCarTexture(), (int)(gameCar.getPositionCar()*Gdx.graphics.getWidth() / 1080),
+                    (int)(positionCarY*Gdx.graphics.getHeight() / 2400),
+                    (int)(gameCar.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
+                    (int)(gameCar.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
+            carBatch.end();
+            enemyDraw();
+            stage.draw();
+            for(int i=0;i<enemyCar.length;i++){
+                if(isCollisionEnemy(enemyCar[i]) && enemyCar[i].getGo())
+                {
+                    flag_end=true;
+                    finalResultLabel.setText(""+score);
+                    Gdx.input.setInputProcessor(stage_end);
+                    font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
+                }
             }
+        }else if(flag_end){
+            endBatch.begin();
+            endBatch.draw(endTexture, 0, 0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+            endBatch.end();
+
+            stage_end.draw();
+        } else if(flag_pause){
+            pauseBatch.begin();
+            pauseBatch.draw(pauseTexture, (int)(250*Gdx.graphics.getWidth() / 1080),
+                    (int)(290*Gdx.graphics.getHeight() / 2400),
+                    (int)(pauseTexture.getWidth()*Gdx.graphics.getWidth() / 2400),
+                    (int)(pauseTexture.getHeight()*Gdx.graphics.getHeight() / 1080));
+            pauseBatch.end();
+
+            stage_pause.draw();
         }
     }
 
@@ -342,6 +454,11 @@ public class Game implements Scene{
         fon.dispose();
         fon2.dispose();
         field.dispose();
+        desert.dispose();
+        endBatch.dispose();
+        pauseBatch.dispose();
         stage.dispose();
+        stage_end.dispose();
+        stage_pause.dispose();
     }
 }

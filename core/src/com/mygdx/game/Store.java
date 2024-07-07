@@ -245,7 +245,7 @@ public class Store implements Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (playOrLockedButton.getName().equals("play")) {
-                    racing.setGameScene(new Game(cars.get(chooseCarIndex)));
+                    racing.setGameScene(new Game(cars.get(chooseCarIndex), racing));
                     racing.setCurrentScene(racing.getGameScene());
                 }
                 if (playOrLockedButton.getName().equals("locked")) {
