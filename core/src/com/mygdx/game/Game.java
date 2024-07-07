@@ -37,8 +37,10 @@ public class Game implements Scene{
     private SpriteBatch fon2 = new SpriteBatch();
     private SpriteBatch endBatch = new SpriteBatch();
     private SpriteBatch pauseBatch = new SpriteBatch();
+    private SpriteBatch znakBatch = new SpriteBatch();
     private static Texture field = new Texture("Game/Field.jpg");
     private static Texture desert = new Texture("Game/Desert.jpg");
+    private static Texture znakTexture = new Texture("Game/znak.png");
     private static Texture endTexture = new Texture("Game/end.jpg");
     private static Texture pauseTexture = new Texture("Game/pause.jpg");
     private Texture drawFonTexture1=field;
@@ -50,6 +52,7 @@ public class Game implements Scene{
     private static Car gameCar;
     boolean flag_right=false, flag_left=false;
     boolean flag_gas=false, flag_breake=false;
+    boolean flag_znak=false;
     static int positionCarY=100;
 
     private GameMusic music;
@@ -332,11 +335,22 @@ public class Game implements Scene{
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         fon2.end();
 
+        if(flag_znak){
+            znakBatch.begin();
+            znakBatch.draw(znakTexture, (int)(840*Gdx.graphics.getWidth() / 1080),
+                    (int)(positionFon1*Gdx.graphics.getHeight() / 2400),
+                    (int)(znakTexture.getWidth()*Gdx.graphics.getWidth() / 2400),
+                    (int)(znakTexture.getHeight()*Gdx.graphics.getHeight() / 1080));
+            znakBatch.end();
+            if(positionFon1<-500) flag_znak=false;
+        }
+
         positionFon1 -= 15;
         positionFon2 -= 15;
         if (positionFon1 <= -2400){
             positionFon1 = positionFon2+2400;
             flag_score=true;
+            if(score%50==0 && score!=0) flag_znak=true;
             if(flag_fon){
                 if(drawFonTexture1==field){
                     drawFonTexture1=desert;
@@ -364,17 +378,19 @@ public class Game implements Scene{
             score+=1;
             resultLabel.setText(""+score);
 
-            if(score%4==0 && score<=8){
+            if(score%3==0 && score<=8){
                 enemySpawn();
             }else if(score%3==0 && score>8 && score<=20){
                 enemySpawn();
-            }else if(score%2==0 && score>=20 && score<=40){
-                enemySpawn();
-            }else if(score>40){
+            }else if(score>=20 && score<=40){
                 enemySpawn();
             }
 
             if(score%50==0) flag_fon=true;
+        }
+
+        if(score>40 && positionFon1==-1200 || positionFon2==-1200){
+            enemySpawn();
         }
     }
     private void enemyDraw()
