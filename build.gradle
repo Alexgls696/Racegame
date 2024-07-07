@@ -63,7 +63,6 @@ project(":android") {
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation "de.golfgl.gdxpushmessages:gdx-pushmessages-core:$pushMsgsVersion"
