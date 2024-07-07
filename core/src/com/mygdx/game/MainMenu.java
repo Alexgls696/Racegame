@@ -81,14 +81,15 @@ public class MainMenu implements Scene {
         menuStage.addActor(everyDayButton);
 
         Table table = new Table();
-        table.add(playButton).width(600 * SCREEN_WIDTH / 2400).height(250 * SCREEN_HEIGHT / 1080).padBottom((500 * SCREEN_WIDTH / 2400) / 4).row();
-        table.add(settingButton).width(600 * SCREEN_WIDTH / 2400).height(250 * SCREEN_HEIGHT / 1080).padBottom((500 * SCREEN_WIDTH / 2400) / 4).row();
-        table.add(exitButton).width(600 * SCREEN_WIDTH / 2400).height(250 * SCREEN_HEIGHT / 1080).padBottom((500 * SCREEN_WIDTH / 2400) / 4);
-        table.setPosition(SCREEN_WIDTH / 2f, SCREEN_HEIGHT / 2.2f);
+
+        float width = 500 * SCREEN_WIDTH / 2400f;
+        float height = 225 * SCREEN_HEIGHT / 1080f;
+        table.add(playButton).width(width).height(height).padBottom((500 * SCREEN_WIDTH / 2400) / 10).row();
+        table.add(settingButton).width(width).height(height).padBottom((500 * SCREEN_WIDTH / 2400) / 10).row();
+        table.add(exitButton).width(width).height(height).padBottom((500 * SCREEN_WIDTH / 2400) / 10);
+        table.setPosition(SCREEN_WIDTH / 2f, SCREEN_HEIGHT / 2.6f);
         menuStage.addActor(table);
     }
-
-    private Racing racing;
 
     public MainMenu(Racing racing) {
         menuStage = new Stage(new ScreenViewport());
@@ -96,7 +97,6 @@ public class MainMenu implements Scene {
         backgroundTexture = new Texture(Gdx.files.internal("background.png"));
         backgroundSprite = new SpriteBatch();
         ButtonsInit(racing);
-        this.racing = racing;
     }
 
     @Override

@@ -20,12 +20,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import com.badlogic.gdx.backends.android.AndroidApplication;
-import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.badlogic.gdx.backends.android.AndroidApplication;
+import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+
 
 public class AndroidLauncher extends AndroidApplication implements GameMainActivity {
     private AlarmManager manager;
@@ -39,13 +40,13 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         context = getApplicationContext();
 
-        CheckNotificationPermission(Manifest.permission.POST_NOTIFICATIONS,NOTIFICATION_PERMISSION_CODE); //Проверка разрешения на уведомления
-        DailyNotificationReceiver.setDailyAlarm(context, 19, 57);
+        CheckNotificationPermission(Manifest.permission.POST_NOTIFICATIONS, NOTIFICATION_PERMISSION_CODE); //Проверка разрешения на уведомления
+        DailyNotificationReceiver.setDailyAlarm(context, 10, 0);
 
         initialize(new Racing(this), config);
     }
 
-    public void CheckNotificationPermission(String permission, int requestCode){
+    public void CheckNotificationPermission(String permission, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED) {
                 ActivityCompat.requestPermissions(this, new String[]{permission}, requestCode);
@@ -66,7 +67,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == AUDIO_PERMISSION_CODE||requestCode==NOTIFICATION_PERMISSION_CODE) {
+        if (requestCode == AUDIO_PERMISSION_CODE || requestCode == NOTIFICATION_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 runOnUiThread(() -> Toast.makeText(context, "Разрешение получено", Toast.LENGTH_SHORT).show());
                 permissionStatus = "OK";
@@ -87,7 +88,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
             Uri uri = data.getData();
             Toast.makeText(context, uri.getPath(), Toast.LENGTH_SHORT).show();
             filepath = getPathFromUri(uri);
-        } else{
+        } else {
             filepath = "Closed";
         }
     }
@@ -119,6 +120,10 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
     public String getAudioFilePath() {
         return filepath;
     }
+    @Override
+    public void setPathNull(){
+        filepath=null;
+    }
 
     @Override
     public String getAudioPermission() {
@@ -140,7 +145,7 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setType("audio/*");
             startActivityForResult(intent, 1);
-        }catch (ActivityNotFoundException ex){
+        } catch (ActivityNotFoundException ex) {
             filepath = "Not found";
             runOnUiThread(() -> Toast.makeText(context, "Не удалось запустить приложение для выбора музыки", Toast.LENGTH_SHORT).show());
         }

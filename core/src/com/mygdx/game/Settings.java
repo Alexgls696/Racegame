@@ -196,6 +196,7 @@ public class Settings implements Scene {
                     throw new RuntimeException(e);
                 }
             } while (path == null);
+            racing.activity.setPathNull();
             if (path.equals("Closed")) {
                 System.out.println(path);
             }

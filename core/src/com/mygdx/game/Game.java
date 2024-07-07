@@ -206,6 +206,7 @@ public class Game implements Scene{
                 }
                 create();
                 super.clicked(event, x, y);
+                GameMusic.MusicInitialize().getGameMusic().play();
             }
         });
         stage_end.addActor(restartButton);
@@ -220,6 +221,7 @@ public class Game implements Scene{
                 GameMusic.MusicInitialize().getMenuMusic().play();
                 racing.setCurrentScene(racing.getMainMenuScene());
                 Gdx.input.setInputProcessor(MainMenu.menuStage);
+                Settings.InitializeSettings(racing.getMainMenuScene(),MainMenu.menuStage);
                 super.clicked(event, x, y);
             }
         });
@@ -235,6 +237,7 @@ public class Game implements Scene{
                 flag_pause=true;
                 Gdx.input.setInputProcessor(stage_pause);
                 super.clicked(event, x, y);
+                GameMusic.MusicInitialize().getGameMusic().pause();
             }
         });
         stage.addActor(pauseButton);
@@ -248,6 +251,7 @@ public class Game implements Scene{
                 flag_pause=false;
                 Gdx.input.setInputProcessor(stage);
                 super.clicked(event, x, y);
+                GameMusic.MusicInitialize().getGameMusic().play();
             }
         });
         stage_pause.addActor(continueButton);
@@ -275,6 +279,7 @@ public class Game implements Scene{
                 GameMusic.MusicInitialize().getMenuMusic().play();
                 racing.setCurrentScene(racing.getMainMenuScene());
                 Gdx.input.setInputProcessor(MainMenu.menuStage);
+                Settings.InitializeSettings(racing.getMainMenuScene(),MainMenu.menuStage);
                 super.clicked(event, x, y);
             }
         });
@@ -426,6 +431,7 @@ public class Game implements Scene{
             endBatch.draw(endTexture, 0, 0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
             endBatch.end();
             if(!flag_money){
+                GameMusic.MusicInitialize().getGameMusic().stop();
                 flag_money=true;
                 Racing.money+=score;
                 Racing.WriteMoneyInFile();

@@ -6,5 +6,5 @@ public interface GameMainActivity {
 
     void checkPermission();
     String getAudioPermission();
-
+    void setPathNull();
 }

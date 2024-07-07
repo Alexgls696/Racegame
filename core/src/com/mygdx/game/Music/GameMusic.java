@@ -41,6 +41,9 @@ public class GameMusic {
     }
 
     public void setGameMusic(Music gameMusic) {
+        if(object.gameMusic!=null){
+            object.gameMusic.stop();
+        }
         object.gameMusic = gameMusic;
     }
 
