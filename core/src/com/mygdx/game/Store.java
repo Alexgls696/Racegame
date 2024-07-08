@@ -325,8 +325,8 @@ public class Store implements Scene {
         left.setSize(buttonWidth, buttonHeight);
         right.setSize(buttonWidth, buttonHeight);
 
-        left.setPosition(25, screen_height / 2f - buttonHeight / 2f);
-        right.setPosition(left.getX() + left.getWidth() + 50, screen_height / 2f - buttonHeight / 2f);
+        left.setPosition(150, screen_height / 2f - buttonHeight / 2f);
+        right.setPosition(left.getX() + left.getWidth() + 75, screen_height / 2f - buttonHeight / 2f);
 
         stage.addActor(left);
         stage.addActor(right);

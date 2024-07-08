@@ -119,7 +119,7 @@ public class Racing extends ApplicationAdapter {
         }).start();
     }
 
-    public boolean isChangeDailyTasks() //Сменяет список задач
+    public boolean isChangeDailyTasks() //Меняет список задач
     {
         if (isChangeDailyTasks) {
             isChangeDailyTasks = false;

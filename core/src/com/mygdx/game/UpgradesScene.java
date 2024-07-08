@@ -37,7 +37,7 @@ public class UpgradesScene implements Scene {
 
     private static Texture moneyTexture = new Texture(Gdx.files.internal("Store/money.png"));
     private static BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
-    private static Label.LabelStyle style = new Label.LabelStyle(font, Color.BLACK);
+    private static Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE );
 
     private BitmapFont descriptionFont = new BitmapFont(Gdx.files.internal("font.fnt"));
     private Label.LabelStyle descriptionLabelStyle;
@@ -52,7 +52,7 @@ public class UpgradesScene implements Scene {
         purchaseStage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        descriptionLabelStyle = new Label.LabelStyle(descriptionFont, Color.BLACK);
+        descriptionLabelStyle = new Label.LabelStyle(descriptionFont, Color.WHITE);
         descriptionFont.getData().setScale(2 * scaleC, 2 * scaleC);
         desctiptionLabel = new Label("Доступные улучшения", descriptionLabelStyle);
         desctiptionLabel.setPosition(SCREEN_WIDTH / 2f - desctiptionLabel.getWidth() / 2, SCREEN_HEIGHT - desctiptionLabel.getHeight() - 50);
@@ -132,7 +132,6 @@ public class UpgradesScene implements Scene {
 
     private static Texture okTexture = new Texture(Gdx.files.internal("Store/ok.png"));
 
-    private BitmapFont noMoneyFont = new BitmapFont(Gdx.files.internal("font.fnt"));
 
     private void DrawNoMoneyLabel(){
         for(int i = 0; i < purchaseStage.getActors().size;i++){
@@ -150,7 +149,7 @@ public class UpgradesScene implements Scene {
         Label selectedDescriptionLabel = new Label("Подтвердить покупку?", descriptionLabelStyle);
         selectedDescriptionLabel.setPosition(SCREEN_WIDTH / 2f - selectedDescriptionLabel.getWidth() / 2f, SCREEN_HEIGHT - selectedDescriptionLabel.getHeight() - 50);
 
-        Label.LabelStyle selectedBonusStyle = new Label.LabelStyle(font, Color.BLACK);
+        Label.LabelStyle selectedBonusStyle = new Label.LabelStyle(font, Color.WHITE);
         Table table = new Table();
         float size = 100 * scaleC;
         table.add(new Label(name + ": ", selectedBonusStyle)).padRight(40);

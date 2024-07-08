@@ -138,6 +138,7 @@ public class MainMenu implements Scene {
             }
         }
         ArrayList<DailyTask>tasks = racing.getTasks();
+
         String line = "";
         for(DailyTask task: tasks){
             line+=task.getIndex()+" ";
@@ -146,6 +147,8 @@ public class MainMenu implements Scene {
         label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,Gdx.graphics.getHeight()-Gdx.graphics.getHeight() / 6-label.getHeight()-100);
         label.setName("diff");
         menuStage.addActor(label);
+
+
     }
 
 
