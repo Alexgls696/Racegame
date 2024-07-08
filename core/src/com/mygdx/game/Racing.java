@@ -12,7 +12,9 @@ import com.mygdx.game.Cars.upgrades.SlowMotionUpgrade;
 import com.mygdx.game.Cars.upgrades.TwoLivesUpgrade;
 import com.mygdx.game.Music.GameMusic;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -25,11 +27,11 @@ import java.util.concurrent.Future;
 
 public class Racing extends ApplicationAdapter {
 
-    public static int money = 500;
+    public static int money = 0;
 
     private Scene storeScene;
     private Scene currentScene;
-    private Scene mainMenuScene;
+    private MainMenu mainMenuScene;
     private Settings settingScene;
     private Scene game;
 
@@ -61,9 +63,8 @@ public class Racing extends ApplicationAdapter {
         GameMusic.MusicInitialize().getMenuMusic().setLooping(true);
 
         tasks = DailyTask.getCurrentDailyTasks();
-
-        LocalDateTime lastTime = DailyTask.lastTime;
-        System.out.println();
+        setDailyTaskTimer();
+        mainMenuScene.DailyTaskLabelDraw();
     }
 
     @Override
@@ -76,7 +77,66 @@ public class Racing extends ApplicationAdapter {
         storeScene.dispose();
         mainMenuScene.dispose();
     }
+
+    public ArrayList<DailyTask> getTasks() {
+        return tasks;
+    }
+
     private boolean isChangeDailyTasks = false;
+
+    private boolean drawDiffLabel = false;
+
+    private String difference = "";
+
+    public String getDiffLine() {
+        return difference;
+    }
+
+    private void setDailyTaskTimer() {
+        new Thread(() -> {
+            try {
+                while (true) {
+                    LocalDateTime now = LocalDateTime.now();
+                    LocalDateTime nextTime = DailyTask.lastTime;
+                    Duration duration = Duration.between(now, nextTime);
+                    long hour = duration.toHours();
+                    long minute = duration.toMinutes();
+                    long second = duration.getSeconds() - hour*3600 - minute*60;
+                    if(second==-1){
+                        second=59;
+                    }
+                    difference = hour + ":" + minute + ":" + second;
+                    if (now.isAfter(nextTime)) {
+                        isChangeDailyTasks = true;
+                    }
+                    drawDiffLabel = true;
+                    Thread.sleep(1000);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+        }).start();
+    }
+
+    public boolean CheckDailyTaskTime() {
+        if (isChangeDailyTasks) {
+            isChangeDailyTasks = false;
+            tasks = DailyTask.getCurrentDailyTasks();
+            DailyTask.WriteCurrentTasksInFile();
+            return true;
+        }
+        return false;
+    }
+
+
+    public boolean isDrawDiffLabel(){
+        return drawDiffLabel;
+    }
+
+    public void setDrawDiffLabel(boolean flag){
+        drawDiffLabel = flag;
+    }
 
     public static void WriteCarsUpgradesInFile() {
         new Thread(() -> {

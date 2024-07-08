@@ -2,12 +2,15 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -15,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Music.GameMusic;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -31,6 +35,7 @@ public class MainMenu implements Scene {
 
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
     private GameMusic gameMusic;
+    private Racing racing;
 
 
     private void ButtonsInit(Racing racing) {
@@ -89,6 +94,8 @@ public class MainMenu implements Scene {
         table.add(exitButton).width(width).height(height).padBottom((500 * SCREEN_WIDTH / 2400) / 10);
         table.setPosition(SCREEN_WIDTH / 2f, SCREEN_HEIGHT / 2.6f);
         menuStage.addActor(table);
+
+        this.racing=racing;
     }
 
     public MainMenu(Racing racing) {
@@ -104,6 +111,42 @@ public class MainMenu implements Scene {
 
     }
 
+    private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
+    private Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
+
+    public void DailyTaskLabelDraw(){
+        for(int i = 0; i < menuStage.getActors().size; i++){
+            if (menuStage.getActors().get(i).getName()!=null&&menuStage.getActors().get(i).getName().equals("taskLabel")) {
+                menuStage.getActors().removeIndex(i); break;
+            }
+        }
+        ArrayList<DailyTask>tasks = racing.getTasks();
+        String line = "";
+        for(DailyTask task: tasks){
+            line+=task.getIndex()+" ";
+        }
+        Label label = new Label(line ,style);
+        label.setName("taskLabel");
+        label.setPosition(SCREEN_WIDTH/2f,SCREEN_HEIGHT-100);
+        menuStage.addActor(label);
+    }
+
+    private void DrawDifferenceLabel(){
+        for(int i = 0; i < menuStage.getActors().size; i++){
+            if (menuStage.getActors().get(i).getName()!=null&&menuStage.getActors().get(i).getName().equals("diff")) {
+                menuStage.getActors().removeIndex(i); break;
+            }
+        }
+        ArrayList<DailyTask>tasks = racing.getTasks();
+        String line = "";
+        for(DailyTask task: tasks){
+            line+=task.getIndex()+" ";
+        }
+        Label label = new Label("До обновления\nзадач осталось: "+racing.getDiffLine(),style);
+        label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,Gdx.graphics.getHeight()-Gdx.graphics.getHeight() / 6-label.getHeight()-100);
+        label.setName("diff");
+        menuStage.addActor(label);
+    }
     @Override
     public void render() {
         backgroundSprite.begin();
@@ -112,6 +155,13 @@ public class MainMenu implements Scene {
 
         menuStage.act();
         menuStage.draw();
+        if(racing.CheckDailyTaskTime()){
+            DailyTaskLabelDraw();
+        }
+        if(racing.isDrawDiffLabel()){
+            racing.setDrawDiffLabel(false);
+            DrawDifferenceLabel();
+        }
     }
 
     @Override

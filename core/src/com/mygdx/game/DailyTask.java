@@ -44,7 +44,6 @@ public class DailyTask {
 
     private static ArrayList<DailyTask> tasks;
 
-
     public static LocalDateTime lastTime;
 
 
@@ -56,14 +55,35 @@ public class DailyTask {
         LocalDateTime lastDate = LocalDateTime.of(Integer.parseInt(date[0]), Integer.parseInt(date[1]),
                 Integer.parseInt(date[2]), Integer.parseInt(date[3]),
                 Integer.parseInt(date[4]), Integer.parseInt(date[5]));
-        LocalDateTime next = lastDate.plusDays(1);
         LocalDateTime now = LocalDateTime.now();
-        if (now.isAfter(next)) {
+        lastTime = lastDate;
+        if (now.isAfter(lastDate)) {
             return true;
         } else {
-            lastTime = lastDate;
             return false;
         }
+    }
+    public static void WriteNextDayInFile() //Установка следующей даты
+    {
+        LocalDateTime now = LocalDateTime.now().plusMinutes(10);
+        int year = now.getYear();
+        int month = now.getMonth().getValue();
+        int day = now.getDayOfMonth();
+        int hour = now.getHour();
+        int minute = now.getMinute();
+        int second = now.getSecond();
+
+        StringBuffer buffer = new StringBuffer();
+        //List<Integer> list = Arrays.asList(year, month, day, 10, 0, 0);
+        List<Integer> list = Arrays.asList(year, month, day, hour, minute, second);
+        for (Integer it : list) {
+            buffer.append(it + " ");
+        }
+        FileHandle handle = Gdx.files.local("timer.txt");
+        handle.writeString(buffer.toString(), false);
+
+        //lastTime = LocalDateTime.of(year,month,day,10,0,0);
+        lastTime = LocalDateTime.of(year,month,day,hour,minute,second);
     }
 
     public static ArrayList<DailyTask> getCurrentDailyTasks() {
@@ -73,8 +93,8 @@ public class DailyTask {
         try {
             line = handle.readString();
         } catch (GdxRuntimeException ex) {
-            ArrayList<DailyTask> tasks = ReadDailyTasksFromFile();
-            WriteCurrentDayInFile();
+            ArrayList<DailyTask> tasks = ReadDailyTasksFromFile(); //рандом
+            WriteNextDayInFile();
             WriteCurrentTasksInFile();
             return tasks;
         }
@@ -86,9 +106,9 @@ public class DailyTask {
                 tasks.add(new DailyTask(current_line[0], Integer.parseInt(current_line[1]), Integer.parseInt(current_line[2]), Boolean.parseBoolean(current_line[3])));
             }
         }else{
-            tasks = ReadDailyTasksFromFile();
+            tasks = ReadDailyTasksFromFile(); //рандом
+            WriteNextDayInFile();
         }
-        WriteCurrentDayInFile();
         return tasks;
     }
 
@@ -113,22 +133,7 @@ public class DailyTask {
         return tasks;
     }
 
-    public static void WriteCurrentDayInFile() {
-        LocalDateTime now = LocalDateTime.now();
-        int year = now.getYear();
-        int month = now.getMonth().getValue();
-        int day = now.getDayOfMonth();
 
-        StringBuffer buffer = new StringBuffer();
-        List<Integer> list = Arrays.asList(year, month, day, 10, 0, 0);
-        for (Integer it : list) {
-            buffer.append(it + " ");
-        }
-        FileHandle handle = Gdx.files.local("timer.txt");
-        handle.writeString(buffer.toString(), false);
-
-        lastTime = LocalDateTime.of(year,month,day,10,0,0);
-    }
 
     public static void WriteCurrentTasksInFile() {
         FileHandle handle = Gdx.files.local("daily_tasks.txt");
