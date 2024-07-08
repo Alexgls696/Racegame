@@ -34,7 +34,7 @@ public class MoneyTable {
         label = new Label(String.valueOf(Racing.money), style);
         table.add(label);
         table.setSize(width, width / 2);
-        table.setPosition(Gdx.graphics.getWidth() - table.getWidth() - 20, Gdx.graphics.getHeight() - table.getHeight() - 20);
+        table.setPosition(Gdx.graphics.getWidth() - table.getWidth() - 100, Gdx.graphics.getHeight() - table.getHeight() - 20);
         stage.addActor(table);
     }
 }

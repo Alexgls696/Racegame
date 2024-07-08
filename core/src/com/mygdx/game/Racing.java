@@ -99,9 +99,11 @@ public class Racing extends ApplicationAdapter {
                     LocalDateTime now = LocalDateTime.now();
                     LocalDateTime nextTime = DailyTask.lastTime;
                     Duration duration = Duration.between(now, nextTime);
-                    long hour = duration.toHours();
-                    long minute = duration.toMinutes();
-                    long second = duration.getSeconds() - hour*3600 - minute*60;
+
+                    long hour = duration.toHours() % 24;
+                    long minute = duration.toMinutes() % 60;
+                    long second = duration.getSeconds() - 3600*hour- minute*60;
+
                     if(second==-1){
                         second=59;
                     }
@@ -160,7 +162,7 @@ public class Racing extends ApplicationAdapter {
             String line;
             StringBuffer buffer = new StringBuffer();
             for (Car car : cars) {
-                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " " + car.getBorderRight() + " " + car.getBorderLeft() + "\r\n";
+                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " " + car.getBorderLeft() + " " + car.getBorderRight() + "\r\n";
                 buffer.append(line);
             }
             handle.writeString(buffer.toString(), false);

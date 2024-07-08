@@ -148,7 +148,7 @@ public class Store implements Scene {
     public static boolean upgradesSceneFlag = false;
 
     private void InitUpgradeButton() {
-        upgradeImage = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/upgrades.png"))),
+       /* upgradeImage = new Button(new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/upgrades.png"))),
                 new TextureRegionDrawable(new Texture(Gdx.files.internal("Store/upgrades_hover.png"))));
 
         float size = screen_height / 6f;
@@ -164,7 +164,7 @@ public class Store implements Scene {
                 }
             }
         });
-        stage.addActor(upgradeImage);
+        stage.addActor(upgradeImage);*/
     }
 
     private BitmapFont purchaseFont = new BitmapFont(Gdx.files.internal("font.fnt"));

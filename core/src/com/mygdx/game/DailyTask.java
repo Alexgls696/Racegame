@@ -67,25 +67,22 @@ public class DailyTask {
     }
     public static void WriteNextDayInFile() //Установка следующей даты
     {
-        LocalDateTime now = LocalDateTime.now().plusMinutes(10);
+        LocalDateTime now = LocalDateTime.now().plusDays(1);
         int year = now.getYear();
         int month = now.getMonth().getValue();
         int day = now.getDayOfMonth();
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        int second = now.getSecond();
 
         StringBuffer buffer = new StringBuffer();
-        //List<Integer> list = Arrays.asList(year, month, day, 10, 0, 0);
-        List<Integer> list = Arrays.asList(year, month, day, hour, minute, second);
+        List<Integer> list = Arrays.asList(year, month, day, 10, 0, 0);
+       // List<Integer> list = Arrays.asList(year, month, day, hour, minute, second);
         for (Integer it : list) {
             buffer.append(it + " ");
         }
         FileHandle handle = Gdx.files.local("timer.txt");
         handle.writeString(buffer.toString(), false);
 
-        //lastTime = LocalDateTime.of(year,month,day,10,0,0);
-        lastTime = LocalDateTime.of(year,month,day,hour,minute,second);
+        lastTime = LocalDateTime.of(year,month,day,10,0,0);
+        //lastTime = LocalDateTime.of(year,month,day,hour,minute,second);
     }
 
     public static ArrayList<DailyTask> getCurrentDailyTasks() {
