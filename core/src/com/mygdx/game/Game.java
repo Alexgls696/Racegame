@@ -47,6 +47,7 @@ public class Game implements Scene{
     private Texture drawFonTexture2=field;
     int positionFon1=0, positionFon2=2400;
     private boolean flag_fon=false;
+    int speedFon=15, speedFonBreake=10;
 
     private SpriteBatch carBatch = new SpriteBatch();
     private static Car gameCar;
@@ -112,16 +113,16 @@ public class Game implements Scene{
 
     private void createEnemyCars()
     {
-        enemyCar[0]=new EnemyCar("Cars/Enemies/RingLeft.png",-8, false);
-        enemyCar[1]=new EnemyCar("Cars/Enemies/NeVestaLeft.png",-8,false);
-        enemyCar[2]=new EnemyCar("Cars/Enemies/FuraLeft.png",-8, false);
+        enemyCar[0]=new EnemyCar("Cars/Enemies/RingLeft.png",-10, false);
+        enemyCar[1]=new EnemyCar("Cars/Enemies/NeVestaLeft.png",-10,false);
+        enemyCar[2]=new EnemyCar("Cars/Enemies/FuraLeft.png",-10, false);
         enemyCarBatch[0]=new SpriteBatch();
         enemyCarBatch[1]=new SpriteBatch();
         enemyCarBatch[2]=new SpriteBatch();
 
-        enemyCar[3]=new EnemyCar("Cars/Enemies/RingRight.png",8, false);
-        enemyCar[4]=new EnemyCar("Cars/Enemies/NeVestaRight.png",8,false);
-        enemyCar[5]=new EnemyCar("Cars/Enemies/FuraRight.png",8, false);
+        enemyCar[3]=new EnemyCar("Cars/Enemies/RingRight.png",10, false);
+        enemyCar[4]=new EnemyCar("Cars/Enemies/NeVestaRight.png",10,false);
+        enemyCar[5]=new EnemyCar("Cars/Enemies/FuraRight.png",10, false);
         enemyCarBatch[3]=new SpriteBatch();
         enemyCarBatch[4]=new SpriteBatch();
         enemyCarBatch[5]=new SpriteBatch();
@@ -318,6 +319,17 @@ public class Game implements Scene{
                 int randomPosition = positions[random.nextInt(positions.length)];
                 enemyCar[numbersEnemyCar[i]].setPositionX(randomPosition);
                 enemyCar[numbersEnemyCar[i]].setPositionY(2400);
+                for(int j=0;j<enemyCar.length;j++){
+                    if(j==numbersEnemyCar[i]) continue;
+                    if(enemyCar[j].getGo() && enemyCar[j].getPositionX()==enemyCar[numbersEnemyCar[i]].getPositionX()){
+                        if(enemyCar[j].getPositionY()+(int)(enemyCar[j].getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400)>enemyCar[numbersEnemyCar[i]].getPositionY()){
+                            enemyCar[numbersEnemyCar[i]].setGo(false);
+                        }
+                        if(enemyCar[numbersEnemyCar[i]].getPositionY()+(int)(enemyCar[numbersEnemyCar[i]].getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400)>enemyCar[j].getPositionY()){
+                            enemyCar[numbersEnemyCar[i]].setGo(false);
+                        }
+                    }
+                }
                 break;
             }
         }
@@ -345,8 +357,8 @@ public class Game implements Scene{
             if(positionFon1<-500) flag_znak=false;
         }
 
-        positionFon1 -= 15;
-        positionFon2 -= 15;
+        positionFon1 -= speedFon;
+        positionFon2 -= speedFon;
         if (positionFon1 <= -2400){
             positionFon1 = positionFon2+2400;
             flag_score=true;
@@ -378,18 +390,18 @@ public class Game implements Scene{
             score+=1;
             resultLabel.setText(""+score);
 
-            if(score%3==0 && score<=8){
+          /*  if(score%3==0 && score<=8){
                 enemySpawn();
             }else if(score%3==0 && score>8 && score<=20){
                 enemySpawn();
             }else if(score>=20 && score<=40){
                 enemySpawn();
-            }
+            }*/
 
             if(score%50==0) flag_fon=true;
         }
 
-        if(score>40 && positionFon1==-1200 || positionFon2==-1200){
+        if(score>10 && ((positionFon1<-1200 && positionFon1>-1300) || (positionFon2<-1200 && positionFon2>-1300))){
             enemySpawn();
         }
     }
@@ -408,11 +420,11 @@ public class Game implements Scene{
                 enemyCarBatch[i].end();
 
                 if(flag_gas) {
-                    enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - (gameCar.getSpeed()+15));
+                    enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - (gameCar.getSpeed()+speedFon));
                 }else if(flag_breake){
-                    enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - 10);
+                    enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - (speedFon-speedFonBreake));
                 }else{
-                    enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - 15);
+                    enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - speedFon);
                 }
 
                 if(enemyCar[i].getPositionY()<-enemyCar[i].getCarTexture().getHeight())
@@ -480,8 +492,8 @@ public class Game implements Scene{
         }
         if(flag_breake)
         {
-            positionFon1+=5;
-            positionFon2+=5;
+            positionFon1+=speedFonBreake;
+            positionFon2+=speedFonBreake;
         }
     }
 
