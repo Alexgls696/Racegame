@@ -20,11 +20,13 @@ import com.mygdx.game.Cars.EnemyCar;
 import com.mygdx.game.Cars.upgrades.AbstractUpgrade;
 import com.mygdx.game.Music.GameMusic;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Game implements Scene{
     private Racing racing;
     private Settings settings;
+    private ArrayList<DailyTask> tasks;
     private Stage stage;
     private Stage stage_end;
     private Stage stage_pause;
@@ -32,6 +34,8 @@ public class Game implements Scene{
     private Label.LabelStyle style = new Label.LabelStyle();
     Label resultLabel;
     Label finalResultLabel;
+    Label taskCompleteLabel;
+    Label moneyLabel;
     ImageButton leftButton;
     ImageButton rightButton;
 
@@ -42,6 +46,7 @@ public class Game implements Scene{
     private SpriteBatch znakBatch = new SpriteBatch();
     private static Texture field = new Texture("Game/Field.jpg");
     private static Texture desert = new Texture("Game/Desert.jpg");
+    private static Texture snow = new Texture("Game/Snow.jpg");
     private static Texture znakTexture = new Texture("Game/znak.png");
     private static Texture endTexture = new Texture("Game/end.jpg");
     private static Texture pauseTexture = new Texture("Game/pause.jpg");
@@ -71,6 +76,12 @@ public class Game implements Scene{
     EnemyCar[] enemyCar=new EnemyCar[6];
     SpriteBatch[] enemyCarBatch=new SpriteBatch[6];
 
+    int breakeScore=0;
+    int gasScore=0;
+    int accelerometerScore=0;
+    boolean flag_taskComplete=false;
+    float taskCompleteLabelTime = 0;
+
     public Game(Car gameCar, Racing racing)
     {
         this.racing=racing;
@@ -83,12 +94,21 @@ public class Game implements Scene{
         font.getData().setScale(1.2f*Gdx.graphics.getWidth() / 1080, 2.0f*Gdx.graphics.getHeight() / 1080);
         style.font = font;
         style.fontColor = Color.WHITE;
-        resultLabel = new Label(""+score, style);
+
+        resultLabel = new Label("Счет: "+score, style);
         resultLabel.setPosition((int)(850*Gdx.graphics.getWidth() / 1080),(int)(2100*Gdx.graphics.getHeight() / 2400));
         stage.addActor(resultLabel);
+
         finalResultLabel= new Label(""+score, style);
         finalResultLabel.setPosition((int)(230*Gdx.graphics.getWidth() / 1080),(int)(1470*Gdx.graphics.getHeight() / 2400));
         stage_end.addActor(finalResultLabel);
+
+        moneyLabel= new Label("", style);
+        moneyLabel.setPosition((int)(270*Gdx.graphics.getWidth() / 1080),(int)(1270*Gdx.graphics.getHeight() / 2400));
+        stage_end.addActor(moneyLabel);
+
+        taskCompleteLabel = new Label("Задание\nвыполнено", style);
+        taskCompleteLabel.setPosition((int)(850*Gdx.graphics.getWidth() / 1080),(int)(1800*Gdx.graphics.getHeight() / 2400));
 
         settings=Settings.InitializeSettings(this, stage_pause);
 
@@ -106,7 +126,7 @@ public class Game implements Scene{
     public void create()
     {
         score=0;
-        resultLabel.setText(""+score);
+        resultLabel.setText("Счет: "+score);
         positionFon1=0; positionFon2=2400;
         flag_fon=false;
         flag_right=false; flag_left=false;
@@ -117,6 +137,11 @@ public class Game implements Scene{
         flag_pause=false;
         flag_money=false;
         gameCar.setPositionCar(gameCar.getBorderRight());
+
+        tasks=racing.getTasks();
+        breakeScore=0;
+        gasScore=0;
+        accelerometerScore=0;
     }
 
     private void createEnemyCars()
@@ -170,6 +195,7 @@ public class Game implements Scene{
             }
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 flag_breake=false;
+                breakeScore=0;
             }
         });
         stage.addActor(breakeButton);
@@ -326,7 +352,7 @@ public class Game implements Scene{
                 if(numbersEnemyCar[i]<3){
                     positions[0] =315; positions[1]=440;
                 }else {
-                    positions[0] =575; positions[1]=700;
+                    positions[0] =567; positions[1]=700;
                 }
                 int randomPosition = positions[random.nextInt(positions.length)];
                 enemyCar[numbersEnemyCar[i]].setPositionX(randomPosition);
@@ -347,7 +373,22 @@ public class Game implements Scene{
         }
     }
 
-
+    private void completeTaskCheck(int indexTask){
+        for(DailyTask task: tasks){
+            if(task.getIndex()==indexTask && !task.getCompleted()){
+                stage.addActor(taskCompleteLabel);
+                flag_taskComplete=true;
+                task.setCompleted(true);
+                MainMenu.flag_changeTasks=true;
+                Racing.money+=task.getCost();
+                Racing.WriteMoneyInFile();
+                MoneyTable.changeAndGetMoneyTable(Store.stage);
+                tasks.remove(task);
+                DailyTask.WriteCurrentTasksInFile();
+                break;
+            }
+        }
+    }
     private void fonDraw()
     {
         fon.begin();
@@ -379,6 +420,8 @@ public class Game implements Scene{
             if(flag_fon){
                 if(drawFonTexture1==field){
                     drawFonTexture1=desert;
+                }else if(drawFonTexture1==desert){
+                    drawFonTexture1=snow;
                 }else{
                     drawFonTexture1=field;
                 }
@@ -391,6 +434,8 @@ public class Game implements Scene{
                 flag_fon=false;
                 if(drawFonTexture2==field){
                     drawFonTexture2=desert;
+                }else if(drawFonTexture2==desert){
+                    drawFonTexture2=snow;
                 }else{
                     drawFonTexture2=field;
                 }
@@ -401,7 +446,38 @@ public class Game implements Scene{
         {
             flag_score=false;
             score+=1;
-            resultLabel.setText(""+score);
+            resultLabel.setText("Счет: "+score);
+
+            if(score==200){
+                completeTaskCheck(0);
+            }
+            if(score==51){
+                completeTaskCheck(1);
+            }
+            if(flag_breake==true){
+                breakeScore+=1;
+            }
+            if(breakeScore==5){
+                completeTaskCheck(3);
+            }
+            if(flag_gas==true){
+                gasScore+=1;
+            }
+            if(gasScore==50){
+                completeTaskCheck(4);
+            }
+            if(settings.isAccelerometerFlag()){
+                accelerometerScore+=1;
+            }
+            if(accelerometerScore==50){
+                completeTaskCheck(6);
+            }
+            if(score==150){
+                completeTaskCheck(7);
+            }
+            if(score==100){
+                completeTaskCheck(8);
+            }
 
             if(score%3==0 && score<=8){
                 enemySpawn();
@@ -418,6 +494,7 @@ public class Game implements Scene{
             enemySpawn();
         }
     }
+
     private void enemyDraw()
     {
         for(int i=0;i<enemyCar.length;i++)
@@ -462,8 +539,10 @@ public class Game implements Scene{
             for(int i=0;i<enemyCar.length;i++){
                 if(isCollisionEnemy(enemyCar[i]) && enemyCar[i].getGo())
                 {
+                    if(i==2 || i==5) completeTaskCheck(2);
                     flag_end=true;
                     finalResultLabel.setText(""+score);
+                    moneyLabel.setText(""+score+Racing.money);
                     Gdx.input.setInputProcessor(stage_end);
                     font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
                 }
@@ -478,10 +557,23 @@ public class Game implements Scene{
                     initLeftRightButtons();
                 }
             }
+
+            if(flag_taskComplete){
+                taskCompleteLabelTime += Gdx.graphics.getDeltaTime();
+                if(taskCompleteLabelTime>=2)
+                {
+                    flag_taskComplete=false;
+                    taskCompleteLabelTime=0;
+                    stage.getActors().removeValue(taskCompleteLabel, true);
+                }
+            }
         }else if(flag_end){
             endBatch.begin();
             endBatch.draw(endTexture, 0, 0, Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
             endBatch.end();
+            if(score<4){
+                completeTaskCheck(5);
+            }
             if(!flag_money){
                 GameMusic.MusicInitialize().getGameMusic().stop();
                 flag_money=true;

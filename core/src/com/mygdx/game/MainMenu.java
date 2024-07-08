@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -27,16 +28,25 @@ import java.util.concurrent.Future;
 
 public class MainMenu implements Scene {
     public static Stage menuStage;
+    private Stage tasksStage;
     private Stage settingsStage;
+
+    private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
+    private Label.LabelStyle styleTasks = new Label.LabelStyle(font, Color.BLACK);
+    Label[] taskLabel=new Label[3];
 
     private SpriteBatch backgroundSprite;
     private Texture backgroundTexture;
+    private SpriteBatch tasksSprite;
+    private Texture tasksTexture;
     private final int SCREEN_WIDTH = Gdx.graphics.getWidth();
 
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
     private GameMusic gameMusic;
     private Racing racing;
 
+    private boolean flag_tasks=false;
+    public static boolean flag_changeTasks=false;
 
     private void ButtonsInit(Racing racing) {
         Button playButton = new Button(new TextureRegionDrawable(new Texture("Menu/play.png")),
@@ -46,7 +56,8 @@ public class MainMenu implements Scene {
         Button exitButton = new Button(new TextureRegionDrawable(new Texture("Menu/exit.png")),
                 new TextureRegionDrawable(new Texture("Menu/exit_hover.png")));
 
-        Button everyDayButton = new Button(new TextureRegionDrawable(new Texture("Menu/everyday.png")));
+        Button everyDayButton = new Button(new TextureRegionDrawable(new Texture("Menu/everyday.png")),
+                new TextureRegionDrawable(new Texture("Menu/everydayUp.png")));
 
         playButton.addListener(new ClickListener() {
             @Override
@@ -74,12 +85,12 @@ public class MainMenu implements Scene {
         everyDayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //Ежедневные задания
+                flag_tasks=true;
+                Gdx.input.setInputProcessor(tasksStage);
             }
         });
 
         int buttonHeight = Gdx.graphics.getHeight() / 6;
-
 
         everyDayButton.setSize(buttonHeight, buttonHeight);
         everyDayButton.setPosition(Gdx.graphics.getWidth() - everyDayButton.getWidth() - 50, Gdx.graphics.getHeight() - everyDayButton.getHeight() - 50);
@@ -96,14 +107,32 @@ public class MainMenu implements Scene {
         menuStage.addActor(table);
 
         this.racing=racing;
+
+        ImageButton back  = new ImageButton(new TextureRegionDrawable(new Texture("Store/left.png")),new TextureRegionDrawable(new Texture("Store/hover_left.png")));
+        back.setSize(SCREEN_HEIGHT / 6f, SCREEN_HEIGHT / 6f);
+        back.setPosition(50, SCREEN_HEIGHT - back.getHeight() - 100);
+        back.getImage().setFillParent(true);
+        back.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                flag_tasks=false;
+                Gdx.input.setInputProcessor(menuStage);
+            }
+        });
+        tasksStage.addActor(back);
     }
 
     public MainMenu(Racing racing) {
         menuStage = new Stage(new ScreenViewport());
+        tasksStage=new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(menuStage);
         backgroundTexture = new Texture(Gdx.files.internal("background.png"));
         backgroundSprite = new SpriteBatch();
+        tasksTexture=new Texture(Gdx.files.internal("Menu/tasks.png"));
+        tasksSprite=new SpriteBatch();
         ButtonsInit(racing);
+
+        font.getData().setScale(1.5f*Gdx.graphics.getWidth() / 2400, 1.5f*Gdx.graphics.getHeight() / 1080);
     }
 
     @Override
@@ -111,44 +140,34 @@ public class MainMenu implements Scene {
 
     }
 
-    private BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
-    private Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
-
     public void DailyTaskLabelDraw(){
-        for(int i = 0; i < menuStage.getActors().size; i++){
-            if (menuStage.getActors().get(i).getName()!=null&&menuStage.getActors().get(i).getName().equals("taskLabel")) {
-                menuStage.getActors().removeIndex(i); break;
+        for(int i = 0; i < tasksStage.getActors().size; i++){
+            if (tasksStage.getActors().get(i).getName()!=null&&tasksStage.getActors().get(i).getName().equals("taskLabel")) {
+                tasksStage.getActors().removeIndex(i); break;
             }
         }
         ArrayList<DailyTask>tasks = racing.getTasks();
         String line = "";
         for(DailyTask task: tasks){
-            line+=task.getIndex()+" ";
+            if(!task.getCompleted())
+                line+=task.getName().replace("_"," ")+"\nНаграда: "+task.getCost()+"\n\n";
         }
-        Label label = new Label(line ,style);
+        Label label = new Label(line ,styleTasks);
         label.setName("taskLabel");
-        label.setPosition(SCREEN_WIDTH/2f,SCREEN_HEIGHT-100);
-        menuStage.addActor(label);
+        label.setPosition((int)(620*Gdx.graphics.getWidth() / 2400),(int)(290*Gdx.graphics.getHeight() / 1080));
+        tasksStage.addActor(label);
     }
 
     private void DrawDifferenceLabel(){
-        for(int i = 0; i < menuStage.getActors().size; i++){
-            if (menuStage.getActors().get(i).getName()!=null&&menuStage.getActors().get(i).getName().equals("diff")) {
-                menuStage.getActors().removeIndex(i); break;
+        for(int i = 0; i < tasksStage.getActors().size; i++){
+            if (tasksStage.getActors().get(i).getName()!=null&&tasksStage.getActors().get(i).getName().equals("diff")) {
+                tasksStage.getActors().removeIndex(i); break;
             }
         }
-        ArrayList<DailyTask>tasks = racing.getTasks();
-
-        String line = "";
-        for(DailyTask task: tasks){
-            line+=task.getIndex()+" ";
-        }
-        Label label = new Label("До обновления\nзадач осталось: "+racing.getDiffLine(),style);
-        label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,Gdx.graphics.getHeight()-Gdx.graphics.getHeight() / 6-label.getHeight()-100);
+        Label label = new Label("До обновления\nзаданий осталось: "+racing.getDiffLine(),styleTasks);
+        label.setPosition((int)(700*Gdx.graphics.getWidth() / 2400),(int)(250*Gdx.graphics.getHeight() / 1080));
         label.setName("diff");
-        menuStage.addActor(label);
-
-
+        tasksStage.addActor(label);
     }
 
 
@@ -158,17 +177,29 @@ public class MainMenu implements Scene {
         backgroundSprite.draw(backgroundTexture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         backgroundSprite.end();
 
-        menuStage.act();
-        menuStage.draw();
+        if(flag_tasks){
+            tasksSprite.begin();
+            tasksSprite.draw(tasksTexture,
+                    (int)(600*Gdx.graphics.getWidth() / 2400),
+                    (int)(200*Gdx.graphics.getHeight() / 1080),
+                    (int)(tasksTexture.getWidth()*Gdx.graphics.getWidth() / 2400),
+                    (int)(tasksTexture.getHeight()*Gdx.graphics.getHeight() / 1080));
+            tasksSprite.end();
 
-        if(racing.isChangeDailyTasks()) //Переинициализировать отображение ежедневных заданий
-        {
-            DailyTaskLabelDraw();
-        }
+            if(racing.isChangeDailyTasks() || flag_changeTasks)
+            {
+                flag_changeTasks=false;
+                DailyTaskLabelDraw();
+            }
+            if(racing.isDrawDiffLabel()){
+                racing.setDrawDiffLabel(false);
+                DrawDifferenceLabel();
+            }
 
-        if(racing.isDrawDiffLabel()){
-            racing.setDrawDiffLabel(false);
-            DrawDifferenceLabel();
+            tasksStage.draw();
+        }else{
+            menuStage.act();
+            menuStage.draw();
         }
     }
 
