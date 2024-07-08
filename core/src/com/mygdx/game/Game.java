@@ -32,6 +32,8 @@ public class Game implements Scene{
     private Label.LabelStyle style = new Label.LabelStyle();
     Label resultLabel;
     Label finalResultLabel;
+    ImageButton leftButton;
+    ImageButton rightButton;
 
     private SpriteBatch fon = new SpriteBatch();
     private SpriteBatch fon2 = new SpriteBatch();
@@ -53,6 +55,8 @@ public class Game implements Scene{
     private static Car gameCar;
     boolean flag_right=false, flag_left=false;
     boolean flag_gas=false, flag_breake=false;
+    boolean flag_changeControl=false;
+    float accelerometerValue;
     boolean flag_znak=false;
     static int positionCarY=100;
 
@@ -86,15 +90,18 @@ public class Game implements Scene{
         finalResultLabel.setPosition((int)(230*Gdx.graphics.getWidth() / 1080),(int)(1470*Gdx.graphics.getHeight() / 2400));
         stage_end.addActor(finalResultLabel);
 
+        settings=Settings.InitializeSettings(this, stage_pause);
+
         init_buttons();
+        if(!settings.isAccelerometerFlag()){
+            initLeftRightButtons();
+        }
         create();
         createEnemyCars();
 
         music = GameMusic.MusicInitialize();
         music.getMenuMusic().stop();
         music.getGameMusic().play();
-
-        settings=Settings.InitializeSettings(this, stage_pause);
     }
     public void create()
     {
@@ -104,6 +111,7 @@ public class Game implements Scene{
         flag_fon=false;
         flag_right=false; flag_left=false;
         flag_gas=false; flag_breake=false;
+        flag_changeControl = settings.isAccelerometerFlag();
         flag_score=false;
         flag_end=false;
         flag_pause=false;
@@ -134,37 +142,8 @@ public class Game implements Scene{
         }
     }*/
 
-    private void init_buttons() {
-        ImageButton leftButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Left.png")));
-        leftButton.setPosition((int)(30*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
-        leftButton.getImage().setFillParent(true);
-        leftButton.addListener(new ClickListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-               flag_left=true;
-                return true;
-            }
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                flag_left=false;
-            }
-        });
-        stage.addActor(leftButton);
-
-        ImageButton rightButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Right.png")));
-        rightButton.setPosition((int)(160*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
-        rightButton.getImage().setFillParent(true);
-        rightButton.addListener(new ClickListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                flag_right=true;
-                return true;
-            }
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                flag_right=false;
-            }
-        });
-        stage.addActor(rightButton);
-
+    private void init_buttons()
+    {
         ImageButton gasButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Gas.png")));
         gasButton.setPosition((int)(950*Gdx.graphics.getWidth() / 1080), (int)(300*Gdx.graphics.getHeight() / 2400));
         gasButton.getImage().setFillParent(true);
@@ -290,6 +269,39 @@ public class Game implements Scene{
         stage_pause.addActor(menuButton);
     }
 
+    private void initLeftRightButtons()
+    {
+        leftButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Left.png")));
+        leftButton.setPosition((int)(30*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        leftButton.getImage().setFillParent(true);
+        leftButton.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                flag_left=true;
+                return true;
+            }
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                flag_left=false;
+            }
+        });
+        stage.addActor(leftButton);
+
+        rightButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Right.png")));
+        rightButton.setPosition((int)(160*Gdx.graphics.getWidth() / 1080), (int)(320*Gdx.graphics.getHeight() / 2400));
+        rightButton.getImage().setFillParent(true);
+        rightButton.addListener(new ClickListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                flag_right=true;
+                return true;
+            }
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                flag_right=false;
+            }
+        });
+        stage.addActor(rightButton);
+    }
+
     private void enemySpawn()
     {
         int[] numbersEnemyCar = {0, 1, 2, 3, 4, 5};
@@ -336,7 +348,8 @@ public class Game implements Scene{
     }
 
 
-    private void fonDraw() {
+    private void fonDraw()
+    {
         fon.begin();
         fon.draw(drawFonTexture1, 0, (int) (positionFon1 * Gdx.graphics.getHeight() / 2400),
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -390,18 +403,18 @@ public class Game implements Scene{
             score+=1;
             resultLabel.setText(""+score);
 
-          /*  if(score%3==0 && score<=8){
+            if(score%3==0 && score<=8){
                 enemySpawn();
-            }else if(score%3==0 && score>8 && score<=20){
+            }else if(score%2==0 && score>8 && score<=20){
                 enemySpawn();
-            }else if(score>=20 && score<=40){
+            }else if(score>=20 && score<=50){
                 enemySpawn();
-            }*/
+            }
 
             if(score%50==0) flag_fon=true;
         }
 
-        if(score>10 && ((positionFon1<-1200 && positionFon1>-1300) || (positionFon2<-1200 && positionFon2>-1300))){
+        if(score>50 && ((positionFon1<-1200 && positionFon1>-1300) || (positionFon2<-1200 && positionFon2>-1300))){
             enemySpawn();
         }
     }
@@ -445,6 +458,7 @@ public class Game implements Scene{
             carBatch.end();
             enemyDraw();
             stage.draw();
+
             for(int i=0;i<enemyCar.length;i++){
                 if(isCollisionEnemy(enemyCar[i]) && enemyCar[i].getGo())
                 {
@@ -452,6 +466,16 @@ public class Game implements Scene{
                     finalResultLabel.setText(""+score);
                     Gdx.input.setInputProcessor(stage_end);
                     font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
+                }
+            }
+
+            if(flag_changeControl!=settings.isAccelerometerFlag()){
+                flag_changeControl = settings.isAccelerometerFlag();
+                if(flag_changeControl){
+                    stage.getActors().removeValue(leftButton, true);
+                    stage.getActors().removeValue(rightButton, true);
+                }else{
+                    initLeftRightButtons();
                 }
             }
         }else if(flag_end){
@@ -477,13 +501,28 @@ public class Game implements Scene{
 
     private void motion()
     {
-        if(flag_right && gameCar.getPositionCar()<gameCar.getBorderRight())
-        {
-            gameCar.setPositionCar(gameCar.getPositionCar()+10);
-        }
-        if(flag_left && gameCar.getPositionCar() > gameCar.getBorderLeft())
-        {
-            gameCar.setPositionCar(gameCar.getPositionCar()-10);
+        if(!settings.isAccelerometerFlag()){
+            if(flag_right && gameCar.getPositionCar()<gameCar.getBorderRight())
+            {
+                gameCar.setPositionCar(gameCar.getPositionCar()+10);
+            }
+            if(flag_left && gameCar.getPositionCar() > gameCar.getBorderLeft())
+            {
+                gameCar.setPositionCar(gameCar.getPositionCar()-10);
+            }
+        }else{
+            accelerometerValue = Gdx.input.getAccelerometerY();
+            if (accelerometerValue > 5 && gameCar.getPositionCar() < gameCar.getBorderRight()) {
+                gameCar.setPositionCar(gameCar.getPositionCar()+10);
+            } else if(accelerometerValue > 2 && accelerometerValue < 5 && gameCar.getPositionCar() < gameCar.getBorderRight()) {
+                gameCar.setPositionCar(gameCar.getPositionCar()+5);
+            }
+
+            if (accelerometerValue < -5 && gameCar.getPositionCar()>gameCar.getBorderLeft()) {
+                gameCar.setPositionCar(gameCar.getPositionCar()-10);
+            } else if(accelerometerValue < -2 && accelerometerValue > -5 && gameCar.getPositionCar()>gameCar.getBorderLeft()) {
+                gameCar.setPositionCar(gameCar.getPositionCar()-5);
+            }
         }
         if(flag_gas)
         {
