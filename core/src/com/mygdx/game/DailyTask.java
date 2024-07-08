@@ -47,6 +47,7 @@ public class DailyTask {
 
     public static LocalDateTime lastTime;
 
+
     private static boolean isCurrentDateAfterLastDatePlusOneDay() {
         FileHandle handle = Gdx.files.local("timer.txt");
         String line = handle.readString();
@@ -99,7 +100,7 @@ public class DailyTask {
 
         ArrayList<Integer> randomIndexes = new ArrayList<>();
         while (randomIndexes.size() < 3) {
-            int number = new Random().nextInt(10);
+            int number = new Random().nextInt(9);
             if (!randomIndexes.contains(number)) {
                 randomIndexes.add(number);
             }

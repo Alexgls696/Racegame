@@ -76,6 +76,7 @@ public class Racing extends ApplicationAdapter {
         storeScene.dispose();
         mainMenuScene.dispose();
     }
+    private boolean isChangeDailyTasks = false;
 
     public static void WriteCarsUpgradesInFile() {
         new Thread(() -> {
