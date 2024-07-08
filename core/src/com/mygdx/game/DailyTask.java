@@ -42,6 +42,8 @@ public class DailyTask {
         return completed;
     }
 
+    public void setCompleted(boolean completed) { this.completed=completed; }
+
     private static ArrayList<DailyTask> tasks;
 
     public static LocalDateTime lastTime;
