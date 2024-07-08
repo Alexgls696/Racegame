@@ -119,7 +119,8 @@ public class Racing extends ApplicationAdapter {
         }).start();
     }
 
-    public boolean CheckDailyTaskTime() {
+    public boolean isChangeDailyTasks() //Сменяет список задач
+    {
         if (isChangeDailyTasks) {
             isChangeDailyTasks = false;
             tasks = DailyTask.getCurrentDailyTasks();

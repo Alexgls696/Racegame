@@ -147,6 +147,8 @@ public class MainMenu implements Scene {
         label.setName("diff");
         menuStage.addActor(label);
     }
+
+
     @Override
     public void render() {
         backgroundSprite.begin();
@@ -155,9 +157,12 @@ public class MainMenu implements Scene {
 
         menuStage.act();
         menuStage.draw();
-        if(racing.CheckDailyTaskTime()){
+
+        if(racing.isChangeDailyTasks()) //Переинициализировать отображение ежедневных заданий
+        {
             DailyTaskLabelDraw();
         }
+
         if(racing.isDrawDiffLabel()){
             racing.setDrawDiffLabel(false);
             DrawDifferenceLabel();
