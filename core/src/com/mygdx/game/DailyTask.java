@@ -55,7 +55,7 @@ public class DailyTask {
         LocalDateTime lastDate = LocalDateTime.of(Integer.parseInt(date[0]), Integer.parseInt(date[1]),
                 Integer.parseInt(date[2]), Integer.parseInt(date[3]),
                 Integer.parseInt(date[4]), Integer.parseInt(date[5]));
-        LocalDateTime next = lastDate;//изменить на lastDay.plusDay();
+        LocalDateTime next = lastDate.plusDays(1);
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(next)) {
             return true;
