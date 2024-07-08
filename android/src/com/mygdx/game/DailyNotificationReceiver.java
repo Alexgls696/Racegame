@@ -28,8 +28,8 @@ public class DailyNotificationReceiver extends BroadcastReceiver {
         // Создаем уведомление
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Ежедневное уведомление")
-                .setContentText("Это ежедневное напоминание!")
+                .setContentTitle("Пора в путь")
+                .setContentText("Доступны новые ежедневные задания")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         // Устанавливаем канал уведомлений (для Android 8 и выше)
