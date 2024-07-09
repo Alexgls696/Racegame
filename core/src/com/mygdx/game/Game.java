@@ -130,6 +130,8 @@ public class Game implements Scene{
         score=0;
         resultLabel.setText("Счет: "+score);
         positionFon1=0; positionFon2=2400;
+        drawFonTexture1=field;
+        drawFonTexture2=field;
         flag_fon=false;
         flag_right=false; flag_left=false;
         flag_gas=false; flag_breake=false;
@@ -548,6 +550,7 @@ public class Game implements Scene{
                 {
                     if(i==2 || i==5) completeTaskCheck(2);
                     flag_end=true;
+                    style.fontColor = Color.WHITE;
                     finalResultLabel.setText(""+score);
                     int resultScore = score+Racing.money;
                     moneyLabel.setText(String.valueOf(resultScore));
