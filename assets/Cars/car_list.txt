@@ -1,3 +1,12 @@
-Cars/Yagoda/Yagoda.png Yagoda 0 20 true 320 700
-Cars/Model_911/Model_911.png Model_911 200 32 false 310 690
-Cars/PoliceCar/image.png Полицейская_машина 150 22 false 310 690
+Cars/MKRNK_mobile/MKRNK_mobile.png MKRNK_mobile 0 18 true 310 700
+Cars/Yagoda/Yagoda.png Yagoda 100 21 false 320 700
+Cars/GAZ/GAZ.png GAZ 500 22 false 310 690
+Cars/OldGt/OldGt.png OldGt 1500 24 false 320 700
+Cars/TimeMaсhine/TimeMaсhine.png TimeMachine 3000 26 false 320 700
+Cars/K10/K10.png K10 4000 27 false 310 690
+Cars/Bayern/Bayern.png Bayern 5000 29 false 310 690
+Cars/NewGt/NewGt.png NewGt 8000 31 false 320 700
+Cars/Model_911/Model_911.png Model_911 10000 35 false 310 690
+Cars/Ferra/Ferra.png Ferra 12000 40 false 310 690
+Cars/Formula/Formula.png Formula 15000 45 false 310 700
+Cars/PoliceCar/image.png Classic_Cop 1000 25 false 320 700

@@ -160,7 +160,7 @@ public class Racing extends ApplicationAdapter {
             String line;
             StringBuffer buffer = new StringBuffer();
             for (Car car : cars) {
-                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " " + car.getBorderRight() + " " + car.getBorderLeft() + "\r\n";
+                line = car.getCarPath() + " " + car.getName().replace(" ", "_") + " " + car.getCost() + " " + car.getSpeed() + " " + car.isPurchased() + " " + car.getBorderLeft() + " " + car.getBorderRight() + "\r\n";
                 buffer.append(line);
             }
             handle.writeString(buffer.toString(), false);

@@ -1,3 +1,12 @@
-Полицейская_машина TWO_LIVES=false SLOW_MOTION=false
+MKRNK_mobile TWO_LIVES=false SLOW_MOTION=false
+Yagoda TWO_LIVES=false SLOW_MOTION=false
+GAZ TWO_LIVES=false SLOW_MOTION=false
+OldGt TWO_LIVES=false SLOW_MOTION=false
+TimeMaсhine TWO_LIVES=false SLOW_MOTION=false
+K10 TWO_LIVES=false SLOW_MOTION=false
+Bayern TWO_LIVES=false SLOW_MOTION=false
+NewGt TWO_LIVES=false SLOW_MOTION=false
 Model_911 TWO_LIVES=false SLOW_MOTION=false
-Полицейская_машина TWO_LIVES=false SLOW_MOTION=false
+Ferra TWO_LIVES=false SLOW_MOTION=false
+Formula TWO_LIVES=false SLOW_MOTION=false
+Classic_Cop TWO_LIVES=false SLOW_MOTION=false

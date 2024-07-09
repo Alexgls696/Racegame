@@ -180,6 +180,7 @@ public class Game implements Scene{
             }
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 flag_gas=false;
+                gasScore=0;
             }
         });
         stage.addActor(gasButton);
@@ -421,8 +422,10 @@ public class Game implements Scene{
                 if(drawFonTexture1==field){
                     drawFonTexture1=desert;
                 }else if(drawFonTexture1==desert){
+                    style.fontColor = Color.BLACK;
                     drawFonTexture1=snow;
                 }else{
+                    style.fontColor = Color.WHITE;
                     drawFonTexture1=field;
                 }
             }
@@ -435,8 +438,10 @@ public class Game implements Scene{
                 if(drawFonTexture2==field){
                     drawFonTexture2=desert;
                 }else if(drawFonTexture2==desert){
+                    style.fontColor = Color.BLACK;
                     drawFonTexture2=snow;
                 }else{
+                    style.fontColor = Color.WHITE;
                     drawFonTexture2=field;
                 }
             }
@@ -472,10 +477,10 @@ public class Game implements Scene{
             if(accelerometerScore==50){
                 completeTaskCheck(6);
             }
-            if(score==150){
+            if(score==151){
                 completeTaskCheck(7);
             }
-            if(score==100){
+            if(score==101){
                 completeTaskCheck(8);
             }
 
@@ -577,7 +582,7 @@ public class Game implements Scene{
             if(!flag_money){
                 GameMusic.MusicInitialize().getGameMusic().stop();
                 flag_money=true;
-                Racing.money+=score;
+                Racing.money+=score+15000;
                 Racing.WriteMoneyInFile();
                 MoneyTable.changeAndGetMoneyTable(Store.stage);
             }
