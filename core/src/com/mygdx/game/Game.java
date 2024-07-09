@@ -549,7 +549,8 @@ public class Game implements Scene{
                     if(i==2 || i==5) completeTaskCheck(2);
                     flag_end=true;
                     finalResultLabel.setText(""+score);
-                    moneyLabel.setText(""+score+Racing.money);
+                    int resultScore = score+Racing.money;
+                    moneyLabel.setText(String.valueOf(resultScore));
                     Gdx.input.setInputProcessor(stage_end);
                     font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
                 }
@@ -599,7 +600,6 @@ public class Game implements Scene{
                 label.setName("maxScoreLabel");
                 label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,moneyLabel.getY());
                 stage_end.addActor(label);
-
             }
             stage_end.draw();
         } else if(flag_pause){
