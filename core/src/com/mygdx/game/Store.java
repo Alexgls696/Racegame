@@ -165,6 +165,7 @@ public class Store implements Scene {
             }
         });
         stage.addActor(upgradeImage);*/
+
     }
 
     private BitmapFont purchaseFont = new BitmapFont(Gdx.files.internal("font.fnt"));
