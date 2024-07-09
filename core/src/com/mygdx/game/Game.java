@@ -388,7 +388,6 @@ public class Game implements Scene{
                 Racing.money+=task.getCost();
                 Racing.WriteMoneyInFile();
                 MoneyTable.changeAndGetMoneyTable(Store.stage);
-                tasks.remove(task);
                 DailyTask.WriteCurrentTasksInFile();
                 break;
             }
