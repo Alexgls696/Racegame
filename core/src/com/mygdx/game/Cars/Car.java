@@ -13,6 +13,7 @@ public class Car {
     private int speed;
     private int cost = 100;
     private int positionCar;
+    private int positionCarY=100;
     private String name;
     private Texture carTexture;
     private String carPath;
@@ -72,6 +73,7 @@ public class Car {
     public void setPositionCar(int positionCar){this.positionCar=positionCar;}
 
     public int getPositionCar(){return positionCar;}
+    public int getPositionCarY(){return positionCarY;}
     public int getCost() {
         return cost;
     }

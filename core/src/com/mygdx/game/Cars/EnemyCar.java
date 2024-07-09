@@ -21,6 +21,8 @@ public class EnemyCar {
         this.go=go;
     }
 
+    public void setSpeed(int speed) {this.speed=speed;}
+
     public int getSpeed() {
         return speed;
     }

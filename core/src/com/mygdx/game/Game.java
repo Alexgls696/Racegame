@@ -66,7 +66,6 @@ public class Game implements Scene{
     boolean flag_changeControl=false;
     float accelerometerValue;
     boolean flag_znak=false;
-    static int positionCarY=100;
 
     private GameMusic music;
 
@@ -151,16 +150,16 @@ public class Game implements Scene{
 
     private void createEnemyCars()
     {
-        enemyCar[0]=new EnemyCar("Cars/Enemies/RingLeft.png",-10, false);
+        enemyCar[0]=new EnemyCar("Cars/Enemies/RingLeft.png",-12, false);
         enemyCar[1]=new EnemyCar("Cars/Enemies/NeVestaLeft.png",-10,false);
-        enemyCar[2]=new EnemyCar("Cars/Enemies/FuraLeft.png",-10, false);
+        enemyCar[2]=new EnemyCar("Cars/Enemies/FuraLeft.png",-8, false);
         enemyCarBatch[0]=new SpriteBatch();
         enemyCarBatch[1]=new SpriteBatch();
         enemyCarBatch[2]=new SpriteBatch();
 
-        enemyCar[3]=new EnemyCar("Cars/Enemies/RingRight.png",10, false);
+        enemyCar[3]=new EnemyCar("Cars/Enemies/RingRight.png",12, false);
         enemyCar[4]=new EnemyCar("Cars/Enemies/NeVestaRight.png",10,false);
-        enemyCar[5]=new EnemyCar("Cars/Enemies/FuraRight.png",10, false);
+        enemyCar[5]=new EnemyCar("Cars/Enemies/FuraRight.png",8, false);
         enemyCarBatch[3]=new SpriteBatch();
         enemyCarBatch[4]=new SpriteBatch();
         enemyCarBatch[5]=new SpriteBatch();
@@ -531,8 +530,15 @@ public class Game implements Scene{
                     enemyCar[i].setPositionY(enemyCar[i].getPositionY() + enemyCar[i].getSpeed() - speedFon);
                 }
 
-                if(enemyCar[i].getPositionY()<-enemyCar[i].getCarTexture().getHeight())
+                if(enemyCar[i].getPositionY()<-enemyCar[i].getCarTexture().getHeight()){
                     enemyCar[i].setGo(false);
+                    if(i==0) enemyCar[i].setSpeed(-12);
+                    if(i==1) enemyCar[i].setSpeed(-10);
+                    if(i==2) enemyCar[i].setSpeed(-8);
+                    if(i==3) enemyCar[i].setSpeed(12);
+                    if(i==4) enemyCar[i].setSpeed(10);
+                    if(i==5) enemyCar[i].setSpeed(8);
+                }
             }
         }
     }
@@ -543,7 +549,7 @@ public class Game implements Scene{
             motion();
             carBatch.begin();
             carBatch.draw(gameCar.getCarTexture(), (int)(gameCar.getPositionCar()*Gdx.graphics.getWidth() / 1080),
-                    (int)(positionCarY*Gdx.graphics.getHeight() / 2400),
+                    (int)(gameCar.getPositionCarY()*Gdx.graphics.getHeight() / 2400),
                     (int)(gameCar.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
                     (int)(gameCar.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
             carBatch.end();
@@ -551,7 +557,30 @@ public class Game implements Scene{
             stage.draw();
 
             for(int i=0;i<enemyCar.length;i++){
-                if(isCollisionEnemy(enemyCar[i]) && enemyCar[i].getGo())
+                if(isCollisionGameCarWithEnemy(enemyCar[i]) && enemyCar[i].getGo())
+                {
+                    if(i==2 || i==5) completeTaskCheck(2);
+                    flag_end=true;
+                    style.fontColor = Color.WHITE;
+                    finalResultLabel.setText(""+score);
+                    int resultScore = score+Racing.money;
+                    moneyLabel.setText(String.valueOf(resultScore));
+                    Gdx.input.setInputProcessor(stage_end);
+                    font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
+                }
+            }
+
+            for(int i=0;i<enemyCar.length;i++){
+                for(int j=0;j<enemyCar.length;j++){
+                    if(isCollisionEnemy(enemyCar[i], enemyCar[j]) && enemyCar[i].getGo() && enemyCar[j].getGo() && i!=j){
+                        if(enemyCar[i].getSpeed()>enemyCar[i].getSpeed()){
+                            enemyCar[i].setSpeed(enemyCar[j].getSpeed());
+                        }else{
+                            enemyCar[j].setSpeed(enemyCar[i].getSpeed());
+                        }
+                    }
+                }
+                if(isCollisionGameCarWithEnemy(enemyCar[i]) && enemyCar[i].getGo())
                 {
                     if(i==2 || i==5) completeTaskCheck(2);
                     flag_end=true;
@@ -661,15 +690,26 @@ public class Game implements Scene{
         }
     }
 
-    public static boolean isCollisionEnemy(EnemyCar enemy) {
+    public static boolean isCollisionGameCarWithEnemy(EnemyCar enemy) {
         Rectangle rect1= new Rectangle((int)(gameCar.getPositionCar()*Gdx.graphics.getWidth() / 1080),
-                (int)(positionCarY*Gdx.graphics.getHeight() / 2400),
+                (int)(gameCar.getPositionCarY()*Gdx.graphics.getHeight() / 2400),
                 (int)(gameCar.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
                 (int)(gameCar.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
         Rectangle rect2=new Rectangle((int)(enemy.getPositionX()*Gdx.graphics.getWidth() / 1080),
                 (int)(enemy.getPositionY()*Gdx.graphics.getHeight() / 2400),
                 (int)(enemy.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
                 (int)(enemy.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
+        return rect1.overlaps(rect2);
+    }
+    public static boolean isCollisionEnemy(EnemyCar enemy, EnemyCar enemy2) {
+        Rectangle rect1=new Rectangle((int)(enemy.getPositionX()*Gdx.graphics.getWidth() / 1080),
+                (int)(enemy.getPositionY()*Gdx.graphics.getHeight() / 2400),
+                (int)(enemy.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
+                (int)(enemy.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
+        Rectangle rect2=new Rectangle((int)(enemy2.getPositionX()*Gdx.graphics.getWidth() / 1080),
+                (int)(enemy2.getPositionY()*Gdx.graphics.getHeight() / 2400),
+                (int)(enemy2.getCarTexture().getWidth()*Gdx.graphics.getWidth() / 1800),
+                (int)(enemy2.getCarTexture().getHeight()*Gdx.graphics.getHeight() / 2400));
         return rect1.overlaps(rect2);
     }
 
