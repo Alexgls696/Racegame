@@ -97,7 +97,6 @@ public class DailyTask {
             WriteCurrentTasksInFile();
             return tasks;
         }
-
         if(!isCurrentDateAfterLastDatePlusOneDay()){
             String[] lines = line.split("\r\n");
             for (String it : lines) {
@@ -119,7 +118,7 @@ public class DailyTask {
 
         ArrayList<Integer> randomIndexes = new ArrayList<>();
         while (randomIndexes.size() < 3) {
-            int number = new Random().nextInt(9);
+            int number = new Random().nextInt(lines.length);
             if (!randomIndexes.contains(number)) {
                 randomIndexes.add(number);
             }

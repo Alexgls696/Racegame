@@ -171,7 +171,6 @@ public class Settings implements Scene {
         new Thread(() -> {
             String permissionStatus = null;
             racing.activity.checkPermission();
-            boolean permissionOk = false;
             try {
                 while (permissionStatus == null) {
                     permissionStatus = racing.activity.getAudioPermission();
@@ -180,12 +179,10 @@ public class Settings implements Scene {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            if (permissionStatus.equals("OK")) {
-                permissionOk = true;
-            }
-            if (!permissionOk) {
+            if (!permissionStatus.equals("OK")) {
                 return;
             }
+
             String path;
             racing.activity.openFileChooser();
             do {

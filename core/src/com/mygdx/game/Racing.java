@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 
 public class Racing extends ApplicationAdapter {
 
-    public static int money = 0;
+    public static int money = 2000;
 
     private Scene storeScene;
     private Scene currentScene;
@@ -104,7 +104,7 @@ public class Racing extends ApplicationAdapter {
 
                     long hour = duration.toHours() % 24;
                     long minute = duration.toMinutes() % 60;
-                    long second = duration.getSeconds() - 3600 * hour - minute * 60;
+                    long second = duration.getSeconds()  % 3600 % 60;
 
                     if (second == -1) {
                         second = 59;
