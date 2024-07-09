@@ -49,6 +49,7 @@ public class Game implements Scene{
     private static Texture field = new Texture("Game/Field.jpg");
     private static Texture desert = new Texture("Game/Desert.jpg");
     private static Texture snow = new Texture("Game/Snow.jpg");
+    private static Texture city = new Texture("Game/City.jpg");
     private static Texture znakTexture = new Texture("Game/znak.png");
     private static Texture endTexture = new Texture("Game/end.jpg");
     private static Texture pauseTexture = new Texture("Game/pause.jpg");
@@ -428,8 +429,10 @@ public class Game implements Scene{
                 }else if(drawFonTexture1==desert){
                     style.fontColor = Color.BLACK;
                     drawFonTexture1=snow;
-                }else{
+                }else if(drawFonTexture1==snow){
                     style.fontColor = Color.WHITE;
+                    drawFonTexture1=city;
+                }else{
                     drawFonTexture1=field;
                 }
             }
@@ -444,8 +447,10 @@ public class Game implements Scene{
                 }else if(drawFonTexture2==desert){
                     style.fontColor = Color.BLACK;
                     drawFonTexture2=snow;
-                }else{
+                }else if(drawFonTexture2==snow){
                     style.fontColor = Color.WHITE;
+                    drawFonTexture2=city;
+                }else{
                     drawFonTexture2=field;
                 }
             }
@@ -586,6 +591,11 @@ public class Game implements Scene{
                 completeTaskCheck(5);
             }
             if(!flag_money){
+                for(int i = 0; i < stage_end.getActors().size; i++){
+                    if(stage_end.getActors().get(i).getName()!=null&&stage_end.getActors().get(i).getName().equals("maxScoreLabel")){
+                        stage_end.getActors().removeIndex(i); break;
+                    }
+                }
                 GameMusic.MusicInitialize().getGameMusic().stop();
                 flag_money=true;
                 Racing.money+=score;
@@ -594,14 +604,14 @@ public class Game implements Scene{
 
                 int maxScore = CheckMaxScore();
                 Label label = null;
-                if (score < maxScore) {
-                    label = new Label("Рекорд: " + maxScore, style);
+                if (score <= maxScore) {
+                    label = new Label("Рекорд:\n     " + maxScore, style);
                 } else {
-                    label = new Label("Рекорд: " + score, style);
+                    label = new Label("Новый рекорд:\n          " + score, style);
                     WriteMaxScore(score);
                 }
                 label.setName("maxScoreLabel");
-                label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,moneyLabel.getY());
+                label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,moneyLabel.getY()-50);
                 stage_end.addActor(label);
             }
             stage_end.draw();
