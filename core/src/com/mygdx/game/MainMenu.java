@@ -39,6 +39,8 @@ public class MainMenu implements Scene {
     private Texture backgroundTexture;
     private SpriteBatch tasksSprite;
     private Texture tasksTexture;
+    private SpriteBatch logoSprite;
+    private Texture logoTexture;
     private final int SCREEN_WIDTH = Gdx.graphics.getWidth();
 
     private final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
@@ -126,10 +128,12 @@ public class MainMenu implements Scene {
         menuStage = new Stage(new ScreenViewport());
         tasksStage=new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(menuStage);
-        backgroundTexture = new Texture(Gdx.files.internal("background.png"));
+        backgroundTexture = new Texture(Gdx.files.internal("Menu/Menu_fon.jpg"));
         backgroundSprite = new SpriteBatch();
         tasksTexture=new Texture(Gdx.files.internal("Menu/tasks.png"));
         tasksSprite=new SpriteBatch();
+        logoTexture=new Texture("Menu/logo.png");
+        logoSprite=new SpriteBatch();
         ButtonsInit(racing);
 
         font.getData().setScale(1.5f*Gdx.graphics.getWidth() / 2400, 1.5f*Gdx.graphics.getHeight() / 1080);
@@ -198,6 +202,13 @@ public class MainMenu implements Scene {
 
             tasksStage.draw();
         }else{
+            logoSprite.begin();
+            logoSprite.draw(logoTexture,
+                    (int)(765*Gdx.graphics.getWidth() / 2400),
+                    (int)(900*Gdx.graphics.getHeight() / 1080),
+                    (int)(logoTexture.getWidth()*Gdx.graphics.getWidth() / 2400),
+                    (int)(logoTexture.getHeight()*Gdx.graphics.getHeight() / 1080));
+            logoSprite.end();
             menuStage.act();
             menuStage.draw();
         }
