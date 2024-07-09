@@ -80,6 +80,7 @@ public class MainMenu implements Scene {
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                racing.activity.finishAffinity();
                 Gdx.app.exit();
             }
         });

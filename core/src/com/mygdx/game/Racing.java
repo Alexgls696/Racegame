@@ -78,6 +78,8 @@ public class Racing extends ApplicationAdapter {
         mainMenuScene.dispose();
     }
 
+    public static boolean exit = false;
+
     public ArrayList<DailyTask> getTasks() {
         return tasks;
     }
@@ -102,10 +104,10 @@ public class Racing extends ApplicationAdapter {
 
                     long hour = duration.toHours() % 24;
                     long minute = duration.toMinutes() % 60;
-                    long second = duration.getSeconds() - 3600*hour- minute*60;
+                    long second = duration.getSeconds() - 3600 * hour - minute * 60;
 
-                    if(second==-1){
-                        second=59;
+                    if (second == -1) {
+                        second = 59;
                     }
                     difference = hour + ":" + minute + ":" + second;
                     if (now.isAfter(nextTime)) {
@@ -133,11 +135,11 @@ public class Racing extends ApplicationAdapter {
     }
 
 
-    public boolean isDrawDiffLabel(){
+    public boolean isDrawDiffLabel() {
         return drawDiffLabel;
     }
 
-    public void setDrawDiffLabel(boolean flag){
+    public void setDrawDiffLabel(boolean flag) {
         drawDiffLabel = flag;
     }
 

@@ -339,6 +339,21 @@ public class Settings implements Scene {
     @Override
     public void dispose() {
         stage.dispose();
+        noTexture.dispose();
+        okTexture.dispose();
+        resetTexture.dispose();
+        searchTexture.dispose();
+        resetHoverTexture.dispose();
+        searchHoverTexture.dispose();
+        volumeOffHoverTexture.dispose();
+        volumeOffTexture.dispose();
+        volumeOnTexture.dispose();
+        volumeOnHoverTexture.dispose();
+        backHoverTexture.dispose();
+        backTexture.dispose();
+        backTexture.dispose();
+        backgroundTexture.dispose();
+        backgroundSprite.dispose();
     }
 
     @Override

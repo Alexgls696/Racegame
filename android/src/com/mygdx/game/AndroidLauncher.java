@@ -163,4 +163,11 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
             runOnUiThread(() -> Toast.makeText(context, "Не удалось запустить приложение для выбора музыки", Toast.LENGTH_SHORT).show());
         }
     }
+
+    @Override
+    public void finishAffinity(){
+        moveTaskToBack(true);
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(1);
+    }
 }
