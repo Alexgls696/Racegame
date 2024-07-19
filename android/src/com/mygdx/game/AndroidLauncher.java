@@ -114,6 +114,14 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
                         while ((bytesRead = inputStream.read(buffer)) != -1) {
                             outputStream.write(buffer, 0, bytesRead);
                         }
+                        if(lastPath!=null && !lastPath.equals(file.getPath())){
+                            File lastMusic = new File(lastPath);
+                            boolean last = lastMusic.exists();
+                            if(lastMusic.exists()){
+                                boolean del  = lastMusic.delete();
+                                System.out.println();
+                            }
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -129,8 +137,10 @@ public class AndroidLauncher extends AndroidApplication implements GameMainActiv
     private String filepath;
     private String permissionStatus;
 
+    private String lastPath;
     @Override
-    public String getAudioFilePath() {
+    public String getAudioFilePath(String lastPath) {
+        this.lastPath=lastPath;
         return filepath;
     }
     @Override

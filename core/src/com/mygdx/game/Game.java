@@ -75,7 +75,7 @@ public class Game implements Scene{
     boolean flag_pause=false;
     boolean flag_money=false;
 
-    EnemyCar[] enemyCar=new EnemyCar[6];
+    private static EnemyCar[] enemyCar=new EnemyCar[6];
     SpriteBatch[] enemyCarBatch=new SpriteBatch[6];
 
     int breakeScore=0;
@@ -83,6 +83,7 @@ public class Game implements Scene{
     int accelerometerScore=0;
     boolean flag_taskComplete=false;
     float taskCompleteLabelTime = 0;
+    public static boolean flag_textures=false;
 
     public Game(Car gameCar, Racing racing)
     {
@@ -98,28 +99,32 @@ public class Game implements Scene{
         style.fontColor = Color.WHITE;
 
         resultLabel = new Label("Счет: "+score, style);
-        resultLabel.setPosition((int)(850*Gdx.graphics.getWidth() / 1080),(int)(2100*Gdx.graphics.getHeight() / 2400));
+        resultLabel.setPosition((int)(820*Gdx.graphics.getWidth() / 1080),(int)(2100*Gdx.graphics.getHeight() / 2400));
         stage.addActor(resultLabel);
 
-        finalResultLabel= new Label(""+score, style);
-        finalResultLabel.setPosition((int)(230*Gdx.graphics.getWidth() / 1080),(int)(1470*Gdx.graphics.getHeight() / 2400));
+        finalResultLabel= new Label("Счет: "+score, style);
+        finalResultLabel.setPosition((int)(50*Gdx.graphics.getWidth() / 1080),(int)(1500*Gdx.graphics.getHeight() / 2400));
         stage_end.addActor(finalResultLabel);
 
-        moneyLabel= new Label("", style);
-        moneyLabel.setPosition((int)(270*Gdx.graphics.getWidth() / 1080),(int)(1270*Gdx.graphics.getHeight() / 2400));
+        moneyLabel= new Label("Денег: ", style);
+        moneyLabel.setPosition((int)(50*Gdx.graphics.getWidth() / 1080),(int)(1200*Gdx.graphics.getHeight() / 2400));
         stage_end.addActor(moneyLabel);
 
-        taskCompleteLabel = new Label("Задание\nвыполнено", style);
+        taskCompleteLabel = new Label("", style);
         taskCompleteLabel.setPosition((int)(850*Gdx.graphics.getWidth() / 1080),(int)(1800*Gdx.graphics.getHeight() / 2400));
+        stage.addActor(taskCompleteLabel);
 
         settings=Settings.InitializeSettings(this, stage_pause);
 
         init_buttons();
+        if(!flag_textures){
+            createEnemyCars();
+            flag_textures=true;
+        }
         if(!settings.isAccelerometerFlag()){
             initLeftRightButtons();
         }
         create();
-        createEnemyCars();
 
         music = GameMusic.MusicInitialize();
         music.getMenuMusic().stop();
@@ -190,7 +195,7 @@ public class Game implements Scene{
         stage.addActor(gasButton);
 
         ImageButton breakeButton = new ImageButton(new TextureRegionDrawable(new Texture("Game/Breake.png")));
-        breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(380*Gdx.graphics.getHeight() / 2400));
+        breakeButton.setPosition((int)(840*Gdx.graphics.getWidth() / 1080), (int)(355*Gdx.graphics.getHeight() / 2400));
         breakeButton.getImage().setFillParent(true);
         breakeButton.addListener(new ClickListener(){
             @Override
@@ -373,6 +378,14 @@ public class Game implements Scene{
                         }
                     }
                 }
+                int[] numberSpeedLeft = {-8, -10, -12};
+                int[] numberSpeedRight = {8, 10, 12};
+                int randomSpeed = random.nextInt(3);
+                if(numbersEnemyCar[i]<3){
+                    enemyCar[numbersEnemyCar[i]].setSpeed(numberSpeedLeft[randomSpeed]);
+                }else{
+                    enemyCar[numbersEnemyCar[i]].setSpeed(numberSpeedRight[randomSpeed]);
+                }
                 break;
             }
         }
@@ -381,7 +394,7 @@ public class Game implements Scene{
     private void completeTaskCheck(int indexTask){
         for(DailyTask task: tasks){
             if(task.getIndex()==indexTask && !task.getCompleted()){
-                stage.addActor(taskCompleteLabel);
+                taskCompleteLabel.setText("Задание\nвыполнено");
                 flag_taskComplete=true;
                 task.setCompleted(true);
                 MainMenu.flag_changeTasks=true;
@@ -561,9 +574,9 @@ public class Game implements Scene{
                     if(i==2 || i==5) completeTaskCheck(2);
                     flag_end=true;
                     style.fontColor = Color.WHITE;
-                    finalResultLabel.setText(""+score);
+                    finalResultLabel.setText("Счет: "+score);
                     int resultScore = score+Racing.money;
-                    moneyLabel.setText(String.valueOf(resultScore));
+                    moneyLabel.setText("Денег: "+String.valueOf(resultScore));
                     Gdx.input.setInputProcessor(stage_end);
                     font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
                 }
@@ -578,17 +591,6 @@ public class Game implements Scene{
                             enemyCar[j].setSpeed(enemyCar[i].getSpeed());
                         }
                     }
-                }
-                if(isCollisionGameCarWithEnemy(enemyCar[i]) && enemyCar[i].getGo())
-                {
-                    if(i==2 || i==5) completeTaskCheck(2);
-                    flag_end=true;
-                    style.fontColor = Color.WHITE;
-                    finalResultLabel.setText(""+score);
-                    int resultScore = score+Racing.money;
-                    moneyLabel.setText(String.valueOf(resultScore));
-                    Gdx.input.setInputProcessor(stage_end);
-                    font.getData().setScale(2.2f*Gdx.graphics.getWidth() / 1080, 4.0f*Gdx.graphics.getHeight() / 1080);
                 }
             }
 
@@ -608,7 +610,7 @@ public class Game implements Scene{
                 {
                     flag_taskComplete=false;
                     taskCompleteLabelTime=0;
-                    stage.getActors().removeValue(taskCompleteLabel, true);
+                    taskCompleteLabel.setText("");
                 }
             }
         }else if(flag_end){
@@ -639,7 +641,7 @@ public class Game implements Scene{
                     WriteMaxScore(score);
                 }
                 label.setName("maxScoreLabel");
-                label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,moneyLabel.getY()-50);
+                label.setPosition(Gdx.graphics.getWidth()-label.getWidth()-50,moneyLabel.getY()-40);
                 stage_end.addActor(label);
             }
             stage_end.draw();

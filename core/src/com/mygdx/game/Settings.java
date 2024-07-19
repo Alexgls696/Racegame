@@ -44,6 +44,7 @@ public class Settings implements Scene {
     private boolean volume = true;
     private boolean accelerometerFlag = false;
 
+    private String lastPath = null;
     private void ReadSettingFromFile() {
         FileHandle handle = null;
         String line = "";
@@ -64,6 +65,7 @@ public class Settings implements Scene {
             } else {
                 try {
                     gamemusic = Gdx.audio.newMusic(Gdx.files.absolute(musicPath));
+                    lastPath = musicPath;
                     music.setGameMusicPath(musicPath);
                 } catch (GdxRuntimeException ex) {
                     gamemusic = Gdx.audio.newMusic(Gdx.files.internal("Sound/game.mp3"));
@@ -187,7 +189,7 @@ public class Settings implements Scene {
             racing.activity.openFileChooser();
             do {
                 try {
-                    path = racing.activity.getAudioFilePath();
+                    path = racing.activity.getAudioFilePath(lastPath);
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -205,6 +207,7 @@ public class Settings implements Scene {
                 GameMusic gameMusic = GameMusic.MusicInitialize();
                 gameMusic.setGameMusic(music);
                 gameMusic.setGameMusicPath(path);
+                lastPath=path;
                 WriteSettingsToFile();
             }
         }).start();

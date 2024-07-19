@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 
 public class Racing extends ApplicationAdapter {
 
-    public static int money = 2000;
+    public static int money = 0;
 
     private Scene storeScene;
     private Scene currentScene;

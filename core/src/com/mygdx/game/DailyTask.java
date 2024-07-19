@@ -101,7 +101,7 @@ public class DailyTask {
             String[] lines = line.split("\r\n");
             for (String it : lines) {
                 String[] current_line = it.split(" ");
-                tasks.add(new DailyTask(current_line[0], Integer.parseInt(current_line[1]), Integer.parseInt(current_line[2]), Boolean.parseBoolean(current_line[3])));
+                    tasks.add(new DailyTask(current_line[0], Integer.parseInt(current_line[1]), Integer.parseInt(current_line[2]), Boolean.parseBoolean(current_line[3])));
             }
         }else{
             tasks = ReadDailyTasksFromFile(); //рандом
